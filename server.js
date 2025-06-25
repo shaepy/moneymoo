@@ -6,6 +6,10 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const session = require('express-session');
+
+const portfolioRoutes = require("./routes/portfolio.js");
+const watchlistRoutes = require("./routes/watchlist.js");
+const searchRoutes = require("./routes/search.js");
 const authController = require("./controllers/auth.js")
 const userToView = require("./middleware/user-to-view.js")
 
@@ -50,6 +54,10 @@ app.use('/auth', authController);
 app.get('/', (req, res) => {
   res.render("index");
 });
+
+app.use('/portfolio', portfolioRoutes);
+app.use('/watchlist', watchlistRoutes);
+app.use('/search', searchRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);

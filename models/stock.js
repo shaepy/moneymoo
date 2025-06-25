@@ -11,7 +11,8 @@ const stockSchema = new mongoose.Schema({
     isFund: { type: Boolean, required: true },
     price: { type: Number, required: true },  // this needs to be updated regularly
     image: { type: String },
-    timestamps: true
-});
+    },
+    { timestamps: true }
+);
 
 module.exports = mongoose.model("Stock", stockSchema);

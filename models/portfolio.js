@@ -27,6 +27,7 @@ const portfolioSchema = new mongoose.Schema({
     }],
     stocks: [userStockSchema],
     totalValue: { type: Number },
+}, {
     timestamps: true
 });
 
