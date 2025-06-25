@@ -1,0 +1,33 @@
+<%- include('../partials/_header') %>
+    <title>moneymoo</title>
+</head>
+<body>
+    <a href="/">Home</a>
+    <h1>Sign Up</h1>
+     <% if (userExists) { %>
+    <p><a href="/auth/sign-in">Log In</a> to your account</p>
+    <% } %>
+    <% if (passwordsDontMatch) { %>
+        <p>Passwords do not match.</p>
+    <% } %>
+    <form action="/auth/sign-up" method="POST" id="new-account-form">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required />
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+        </div>
+        <div>
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required />
+        </div>
+        <button type="submit">Create an account</button>
+    </form>
+</body>
+</html>
