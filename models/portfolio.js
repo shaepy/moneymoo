@@ -19,7 +19,8 @@ const portfolioSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 24
     },
     trades: [{
         type: mongoose.Schema.Types.ObjectId,

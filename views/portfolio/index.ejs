@@ -2,6 +2,19 @@
     <title>Portfolio</title>
 </head>
 <body>
-    <h1>Portfolio</h1>
+    <h1>My Portfolio</h1>
+    <p>keep track of your moo-lah</p>
+    <a href="/portfolio/new">+ Create portfolio</a>
+
+    <h2>view</h2>
+    <% if (portfolios) { %>
+       <% portfolios.forEach(p => { %>
+             <a href="/portfolio?id=<%= p._id %>"><p><%= p.name %></p></a>
+       <% }); %>
+    <% } %>
+
+    <% if (activePortfolio) { %>
+       <%= activePortfolio.name %>
+    <% } %>
 </body>
 </html>

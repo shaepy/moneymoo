@@ -1,0 +1,12 @@
+<%- include('../partials/_header') %>
+    <title>Portfolio</title>
+</head>
+<body>
+    <h1>Create Portfolio</h1>
+    <form action="/portfolio" method="POST">
+        <label for="name">Portfolio Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter portfolio name" required />
+        <button type="submit">Create Portfolio</button>
+    </form>
+</body>
+</html>

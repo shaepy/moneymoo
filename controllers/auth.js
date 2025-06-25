@@ -7,7 +7,7 @@ router.get('/sign-up', (req, res) => {
     res.render('auth/sign-up', {
         userExists: false,
         passwordsDontMatch: false
-    })
+    });
 });
 
 router.get('/sign-in', (req, res) => {
@@ -24,6 +24,7 @@ router.post('/sign-up', async (req, res) => {
     const validUser = await User.findOne({
         $or: [{ username: req.body.username }, { email: req.body.email }]
     });
+
     if (validUser) {
         return res.render("auth/sign-up", {
             userExists: true,
@@ -48,7 +49,7 @@ router.post('/sign-up', async (req, res) => {
     req.session.save(() => {
         res.redirect("/");
     });
-})
+});
 
 router.post('/sign-in', async (req, res) => {
     const validUser = await User.findOne({
@@ -70,7 +71,7 @@ router.post('/sign-in', async (req, res) => {
     req.session.save(() => {
         res.redirect("/");
     });
-})
+});
 
 
 module.exports = router;
