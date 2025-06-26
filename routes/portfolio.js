@@ -4,26 +4,28 @@ const User = require("../models/user.js");
 const Trade = require("../models/trade.js");
 const Stock = require("../models/stock.js");
 const router = express.Router();
+const isSignedIn = require('../middleware/is-signed-in.js');
 
-router.get('/', async (req, res) => {
+// TODO-ST: need to update the price periodically
+
+router.get('/', isSignedIn, async (req, res) => {
     const portfolioId = req.query.id;
     const user = await User.findById(req.session.user._id).populate('portfolios');
 
-    if (portfolioId && user) {
+    if (portfolioId) {
         const portfolio = await Portfolio.findById(portfolioId).populate('userStocks.stock');
         console.log('the matching portfolio is:', portfolio);
-
         return res.render('portfolio/index', {
             portfolios: null,
             activePortfolio: portfolio
         });
     };
 
-    if (user.portfolios) {
+    if (user.portfolios.length > 0) {
         const portfolioTotalSum = user.portfolios.reduce((total, portfolio) => {
             return total + portfolio.totalValue;
         }, 0);
-        console.log(portfolioTotalSum)
+        console.log('portfolioTotalSum:', portfolioTotalSum);
 
         res.render('portfolio/index', {
             portfolios: user.portfolios,
@@ -38,11 +40,11 @@ router.get('/', async (req, res) => {
     };
 });
 
-router.get('/new', (req, res) => {
+router.get('/new', isSignedIn, (req, res) => {
     res.render('portfolio/new');
 });
 
-router.get('/:portfolioId/trade/new', async (req, res) => {    
+router.get('/:portfolioId/trade/new', isSignedIn, async (req, res) => {    
     const portfolio = await Portfolio.findById(req.params.portfolioId)
     res.render('portfolio/trade/new', { portfolio });
 });
@@ -61,12 +63,11 @@ router.post('/', async (req, res) => {
 
 // make a new trade here
 router.post('/:portfolioId', async (req, res) => {
-    const portfolio = await Portfolio.findById(req.params.portfolioId);
+    const portfolio = await Portfolio.findById(req.params.portfolioId).populate('userStocks.stock');
     console.log('portfolio:', portfolio)
     console.log('portfolio.totalValue currently at:', portfolio.totalValue)
-    console.log('portfolio.totalValue typeof:', typeof portfolio.totalValue)
 
-    // !prevent COMMAS from the price (no 1,535)
+    // !HANDLE COMMAS from the price or quantity (no 1,535 passed)
     const { type, symbol, date, quantity, price, notes } = req.body;
     const tradeDate = new Date(date);
 
@@ -76,53 +77,82 @@ router.post('/:portfolioId', async (req, res) => {
     let stock = await Stock.findOne({ symbol: symbol });
     console.log('did we find a stock?:', stock);
 
-    // TODO-ST handle if a stock already exists (do not need to create a new model)
-    if (stock) {
-        // we don't need to make a new stock.
-        // we need all other trades in this portfolio with this stock
-        // find trades with this stock and this portfolio
-        const trades = await Trade.find({
-            $and: [
-                { stock: stock._id },
-                { portfolioId: portfolio._id }
-            ]
+    // stock does not exist, find from API and create one
+    if (!stock) {
+        const newStock = await getStockFromAPI(symbol);
+        console.log('data returned from API', newStock);
+        stock = await Stock.create(newStock[0]);
+        console.log('new stock created:', stock);
+    };
+
+    const trades = await Trade.find({
+            $and: [{ stock: stock._id }, { portfolioId: portfolio._id }]
         });
-        console.log(trades);
-        // calculate cost basis from previous trades
+    console.log('trades found?:', trades);
+    
+    // add the new trade
+    const trade = await Trade.create({
+        type: type.toLowerCase(),
+        stock: stock._id,
+        date: tradeDate,
+        quantity: Number(quantity),
+        price: Number(price),
+        notes: notes ? notes : null,
+        portfolioId: portfolio._id
+    });
+    console.log('created new trade:', trade);
+
+    if (trades.length > 0) {
+        console.log('this stock exists, and already in this portfolio');
+        const currentTotalAmount = trades.reduce((total, trade) => {
+            return total + (trade.quantity * trade.price);
+        }, 0);
+        console.log('currentTotalAmount:', currentTotalAmount);
+
+        const currentTotalNumOfShares = trades.reduce((total, trade) => {
+            return total + trade.quantity;
+        }, 0);
+        console.log('currentTotalNumOfShares:', currentTotalNumOfShares);
+
+        const newTotalCost = currentTotalAmount + (trade.quantity * trade.price);
+        console.log('newTotalCost:', newTotalCost);
+        const newTotalQuantity = currentTotalNumOfShares + trade.quantity;
+        console.log('newTotalQuantity:', newTotalQuantity);
+        const newAvgCostBasis = (newTotalCost / newTotalQuantity);
+        console.log('newAvgCostBasis:', newAvgCostBasis);
+
+        // find the existing stock
+        const userStock = portfolio.userStocks.find((userSt) => {
+            return userSt.stock._id.toString() === stock._id.toString();
+        });
+        console.log('found the stock in portfolio:', userStock);
+
+        userStock.set({
+            costBasis: newAvgCostBasis,
+            quantity: newTotalQuantity,
+            totalCost: newTotalCost
+        });
 
     } else {
-        const newStock = await getStockFromAPI(symbol);
-        console.log('data returned from API', newStock)
-        // create a new stock
-        stock = await Stock.create(newStock);
-        console.log('new stock created:', stock)
-
-        const trade = await Trade.create({
-            type: type.toLowerCase(),
-            stock: stock[0]._id,
-            date: tradeDate,
-            quantity: Number(quantity),
-            price: Number(price),
-            notes: notes ? notes : null,
-            portfolioId: portfolio._id
-        });
-        console.log('created new trade:', trade);
-        
-        // create the userStockSchema based on the new trade
+        // stock exists, but not in this portfolio
+        console.log('this stock exists, but not yet in this portfolio. using new price and qt');
         const userStock = {
-            stock: stock[0]._id,
+            stock: stock._id,
             costBasis: Number(price),
             quantity: Number(quantity),
             totalCost: Number(price) * Number(quantity)
-        }
-
-        portfolio.totalValue += Number(quantity) * stock[0].price;
-        portfolio.trades.push(trade);
+        };
+        console.log('new userStock is:', userStock);
         portfolio.userStocks.push(userStock);
-        await portfolio.save();
+    };
 
-        console.log('portfolio is updated:', portfolio);
-    }
+    portfolio.trades.push(trade);
+    // !this only adds the portfolio value but we need a function that actually CALCULATES the value
+    portfolio.totalValue += Number(quantity) * stock.price;
+
+    await portfolio.save();
+    console.log('portfolio is updated:', portfolio);
+
     res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
 
