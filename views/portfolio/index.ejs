@@ -9,7 +9,7 @@
 
     <% if (portfolios) { %>
     <h2>overview</h2>
-        <h2>$<%= portfolioTotalSum %></h2>
+        <h2>$<%= portfolioTotalSum.toFixed(2) %></h2>
         <% portfolios.forEach(p => { %>
           <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
         <% }); %>

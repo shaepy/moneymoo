@@ -66,6 +66,7 @@ router.post('/:portfolioId', async (req, res) => {
     console.log('portfolio.totalValue currently at:', portfolio.totalValue)
     console.log('portfolio.totalValue typeof:', typeof portfolio.totalValue)
 
+    // !prevent COMMAS from the price (no 1,535)
     const { type, symbol, date, quantity, price, notes } = req.body;
     const tradeDate = new Date(date);
 
