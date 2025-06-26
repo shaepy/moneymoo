@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const tradeSchema = new mongoose.Schema({
     stock: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Stock"
+        ref: "Stock",
+        required: true
     },
     date: {
         type: Date,

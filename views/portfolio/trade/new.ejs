@@ -1,0 +1,38 @@
+<%- include('../../partials/_header') %>
+    <title>Portfolio</title>
+</head>
+<body>
+    <a href="/portfolio">Back to Portfolio</a>
+    <h1>Add a Trade</h1>
+    <form action="/portfolio/<%= portfolio._id %>" method="POST">
+        <div>
+            <label for="type">Trade:</label>
+            <select name="type" id="type" required >
+                <option>Buy</option>
+                <option>Sell</option>
+            </select>
+        </div>
+        <div>
+            <label for="symbol">Stock Symbol</label>
+            <input type="text" name="symbol" id="symbol" required />
+        </div>
+        <div>
+            <label for="date">Date</label>
+            <input type="date" name="date" id="date" required />
+        </div>
+        <div>
+            <label for="quantity">Amount of Shares</label>
+            <input type="text" name="quantity" id="quantity" required />
+        </div>
+        <div>
+            <label for="price">Price per Stock</label>
+            <input type="text" name="price" id="price" required />
+        </div>
+        <div>
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" placeholder="Write something here"></textarea>
+        </div>
+        <button type="submit">Add Trade</button>
+    </form> 
+</body>
+</html>

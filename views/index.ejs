@@ -5,17 +5,13 @@
   <% if (user) { %>
     <h1>Welcome back, <%= user.username %></h1>
     <a href="/portfolio">Portfolio</a>
-    <br>
     <a href="/watchlist">Watchlist</a>
-    <br>
     <a href="/search">Search</a>
-    <br>
     <a href="/auth/sign-out">Log Out</a>
   <% } else { %>
     <h1>Welcome to moneymoo</h1>
     <p>let's start milking your gains</p>
     <a href="/auth/sign-up"><span>Sign Up</span></a>
-    <br>
     <a href="/auth/sign-in"><span>Log In</span></a>
   <% } %>
 </body>

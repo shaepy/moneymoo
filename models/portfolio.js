@@ -8,7 +8,7 @@ const userStockSchema = new mongoose.Schema({
     },
     costBasis: { type: Number, required: true },
     quantity: { type: Number, required: true },
-    totalValue: { type: Number, required: true },
+    totalCost: { type: Number, required: true },
 });
 
 const portfolioSchema = new mongoose.Schema({
@@ -20,13 +20,14 @@ const portfolioSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        maxLength: 24
+        maxLength: 24,
+        unique: true
     },
     trades: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Trade",
     }],
-    stocks: [userStockSchema],
+    userStocks: [userStockSchema],
     totalValue: { type: Number },
 }, {
     timestamps: true
