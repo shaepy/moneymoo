@@ -1,0 +1,34 @@
+<%- include('../../partials/_header') %>
+    <title>Trades</title>
+</head>
+<body>
+    <h1>Trades</h1>
+    <a href="/portfolio?id=<%= portfolio._id %>">Back to Portfolio</a>
+    <h2><%= portfolio.name %></h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Asset</th>
+                <th>Shares</th>
+                <th>Price/Share</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% trades.forEach(trade => { %>
+            <tr>
+                <td><%= trade.type %></td>
+                <td><%= trade.dateStr %></td>
+                <td><%= trade.stock.symbol %></td>
+                <td><%= trade.quantity %></td>
+                <td><%= trade.price %></td>
+                <td><%= trade.notes %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+
+</body>
+</html>

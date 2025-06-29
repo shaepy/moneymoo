@@ -4,21 +4,28 @@
 <body>
     <a href="/">Home</a>
     <h1>My Portfolio</h1>
+    <% if (!activePortfolio) { %>
     <a href="/portfolio/new">+ Create portfolio</a>
+    <% } %>
 
     <% if (portfolios) { %>
     <h2>overview</h2>
-        <h2>$<%= portfolioTotalSum.toFixed(2) %></h2>
+        <h2>$<%= portfolioTotalValue.toFixed(2) %></h2>
         <% portfolios.forEach(p => { %>
           <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
         <% }); %>
     <% } %>
 
     <% if (activePortfolio) { %>
-        <p><a href="/portfolio">view all</a></p>
+        <p><a href="/portfolio">Back</a></p>
         <h2><%= activePortfolio.name %></h2>
+        <div>
+            <a href="/portfolio/<%= activePortfolio._id %>/edit">EDIT</a>
+            <a href="/portfolio/<%= activePortfolio._id %>/remove">REMOVE</a>
+        </div>
         <h2>total: $<%= (activePortfolio.totalValue).toFixed(2) %></h2>
         <h3>holdings</h3>
+        <p><a href="/portfolio/<%= activePortfolio._id %>/trades">View Trades</a></p>
 
         <% activePortfolio.userStocks.forEach((userStock) => { %>
             <div class="user-stocks-div">
@@ -33,7 +40,7 @@
             </div>
         <% }) %>
 
-        <p><a href="/portfolio/<%= activePortfolio._id %>/trade/new">+ Add Trade</a></p>
+        <p><a href="/portfolio/<%= activePortfolio._id %>/trades/new">+ Add Trade</a></p>
     <% } %>
 </body>
 </html>

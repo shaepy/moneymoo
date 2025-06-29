@@ -1,0 +1,13 @@
+<%- include('../partials/_header') %>
+    <title>Portfolio</title>
+</head>
+<body>
+    <a href="/">Home</a>
+    <h1>Edit Portfolio</h1>
+    <form action="/portfolio/<%= portfolio._id %>?_method=PUT" method="POST">
+        <label for="name">Portfolio Name</label>
+        <input type="text" id="name" name="name" value="<%= portfolio.name %>" />
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

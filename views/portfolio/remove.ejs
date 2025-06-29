@@ -1,0 +1,13 @@
+<%- include('../partials/_header') %>
+    <title>Portfolio</title>
+</head>
+<body>
+    <a href="/">Home</a>
+    <h1>Remove Portfolio</h1>
+    <p>Are you sure you want to remove <strong><%= portfolio.name %></strong> from your portfolios?</p>
+    <p>This will remove the stock from your portfolio and delete all past trades. Once deleted, your portfolio cannot be recovered.</p>
+    <form action="/portfolio/<%= portfolio._id %>?_method=DELETE" method="POST">
+        <button type="submit">Delete <%= portfolio.name %></button>
+    </form>
+</body>
+</html>
