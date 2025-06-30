@@ -41,10 +41,19 @@
                 <td><%= trade.quantity %></td>
                 <td><%= trade.price %></td>
                 <td><%= trade.notes %></td>
+
+                <% if (trade.delete) { %>
+                <td>
+                    <form action="/portfolio/<%= portfolio._id %>/trades/<%= trade._id %>?_method=DELETE" method="POST">
+                        <button type="submit">delete</button>
+                    </form>
+                </td>
+                <% } else { %>
                 <td>
                     <a href="/portfolio/<%= portfolio._id %>/trades?edit=<%= trade._id %>">edit</a> |
-                    <a href="/portfolio/<%= portfolio._id %>/trades?delete=<%= trade._id %>">remove</a>
+                    <a href="/portfolio/<%= portfolio._id %>/trades?delete=<%= trade._id %>">delete</a>
                 </td>
+                <% } %>
             </tr>
             <% } %>
         <% }); %>

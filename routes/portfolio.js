@@ -5,16 +5,16 @@ const Trade = require("../models/trade.js");
 const Stock = require("../models/stock.js");
 const router = express.Router();
 const isSignedIn = require("../middleware/is-signed-in.js");
+const user = require("../models/user.js");
 
 /* ------------------------- GET ROUTES ------------------------- */
 
 router.get("/", isSignedIn, async (req, res) => {
   const portfolioId = req.query.id;
   const user = await User.findById(req.session.user._id).populate("portfolios");
-
+  
   if (portfolioId) {
     const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
-
     portfolio.userStocks.forEach((userStock) => {
       userStock.currentValue = (
         userStock.stock.price * userStock.quantity
@@ -26,9 +26,7 @@ router.get("/", isSignedIn, async (req, res) => {
         ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
       ).toFixed(2);
     });
-
     if (req.query.edit) portfolio.edit = true;
-
     return res.render("portfolio/index", {
       portfolios: null,
       activePortfolio: portfolio,
@@ -39,7 +37,6 @@ router.get("/", isSignedIn, async (req, res) => {
     const portfoliosSumValue = user.portfolios.reduce((total, portfolio) => {
       return total + portfolio.totalValue;
     }, 0);
-
     res.render("portfolio/index", {
       portfolios: user.portfolios,
       activePortfolio: null,
@@ -62,9 +59,25 @@ router.get("/:portfolioId/edit", isSignedIn, async (req, res) => {
   res.render("portfolio/edit", { portfolio });
 });
 
+// * for both userStocks and portfolios
 router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
-  res.render("portfolio/remove", { portfolio });
+  const stockId = req.query.id;
+  const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
+  if (stockId) {
+    const userStock = portfolio.userStocks.id(stockId);
+    console.log("stock:", userStock);
+    res.render("portfolio/remove", {
+      removePortfolio: false,
+      userStock: userStock,
+      portfolio,
+    })
+  } else {
+    res.render("portfolio/remove", {
+      removePortfolio: true,
+      userStock: null,
+      portfolio,
+    });
+  }
 });
 
 router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
@@ -85,15 +98,12 @@ router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
   });
   portfolio.trades.sort((a, b) => b.date - a.date);
 
-  if (req.query) {
-    if (req.query.edit) {
-      const tradeId = req.query.edit;
-      const trade = portfolio.trades.find(trade => trade._id.toString() === tradeId);
-      trade.edit = true;
-    } else {
-      // TODO-ST: it's delete
-      const tradeId = req.query.delete;
-    }
+  const tradeAction = req.query.edit ? 'edit' : req.query.delete ? 'delete' : null;
+  if (tradeAction) {
+    const trade = portfolio.trades.find((trade) => {
+        return trade._id.toString() === req.query[tradeAction]
+    });
+    trade[tradeAction] = true;
   }
   res.render('portfolio/trades/archive', { portfolio, trades: portfolio.trades });
 });
@@ -166,7 +176,7 @@ router.post("/:portfolioId", async (req, res) => {
   }
   portfolio.trades.push(trade);
   await portfolio.save();
-  await updateportfoliosSumValue(portfolio._id);
+  await updatePortfoliosSumValue(portfolio._id);
   res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
 
@@ -174,7 +184,7 @@ router.post("/:portfolioId", async (req, res) => {
 
 router.put("/:portfolioId", async (req, res) => {
   await Portfolio.findByIdAndUpdate(req.params.portfolioId, { name: req.body.name });
-  res.redirect(`/portfolio?id=${req.params.portfolioId}`)
+  res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
 
 router.put("/:portfolioId/trades/:tradeId", async (req, res) => {
@@ -199,6 +209,56 @@ router.delete("/:portfolioId", async (req, res) => {
   res.redirect('/portfolio');
 });
 
+router.delete("/:portfolioId/trades/:tradeId", async (req, res) => {
+  const trade = await Trade.findById(req.params.tradeId).populate('stock');
+  // recalculate shares, and cost basis (update userStock)
+  const tradeTotalCost = trade.price * trade.quantity; // subtract from userStock totalCost
+
+  const portfolio = await Portfolio.findById(req.params.portfolioId);
+  const userStock = portfolio.userStocks.find((u) => {
+    return u.stock.toString() === trade.stock._id.toString();
+  });
+  console.log('userStock is:', userStock);
+
+  // userStock needs to recalc costBasis & subtract quantity, and totalCost
+  userStock.quantity = userStock.quantity - trade.quantity;
+
+  if (userStock.quantity > 0) {
+    userStock.totalCost = userStock.totalCost - tradeTotalCost;
+    userStock.costBasis = userStock.totalCost / userStock.quantity;
+    console.log(
+      'quantity:', userStock.quantity,
+      'totalCost:', userStock.totalCost,
+      'costBasis:', userStock.costBasis
+    );
+  } else {
+    portfolio.userStocks.pull(userStock._id);
+  }
+  portfolio.trades.pull(req.params.tradeId);
+  await trade.deleteOne();
+  await portfolio.save();
+  await updatePortfoliosSumValue(portfolio._id);
+  res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
+});
+
+// TODO-ST: delete a stock from portfolio
+router.delete("/:portfolioId/stocks/:stockId", async (req, res) => {
+  const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
+  const userStock = portfolio.userStocks.id(req.params.stockId);
+  const trades = await Trade.find({
+    $and: [{ stock: userStock.stock._id }, { portfolioId: portfolio._id }],
+  });
+  const tradesToRemove = trades.map(trade => trade._id);
+  portfolio.trades.forEach(trade => {
+    if (tradesToRemove.includes(trade)) portfolio.trades.pull(trade);
+  });
+  portfolio.userStocks.pull(userStock._id);
+  await portfolio.save();
+  await Trade.deleteMany({ $and: [{ stock: userStock.stock._id }, { portfolioId: portfolio._id }] });
+  await updatePortfoliosSumValue(portfolio._id);
+  res.redirect(`/portfolio?id=${req.params.portfolioId}`);
+});
+
 /* ------------------------- FUNCTIONS ------------------------- */
 
 const createStockFromAPI = async (symbol) => {
@@ -211,7 +271,7 @@ const createStockFromAPI = async (symbol) => {
   return await Stock.create(stock[0]);
 };
 
-const updateportfoliosSumValue = async (portfolioId) => {
+const updatePortfoliosSumValue = async (portfolioId) => {
   const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
   const totalSum = portfolio.userStocks.reduce((total, userStock) => {
     return total + (userStock.quantity * userStock.stock.price)

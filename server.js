@@ -65,10 +65,36 @@ app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
 });
 
-/* --------- REFRESH CURRENT STOCK PRICES --------- */
+/* --------- FETCH CURRENT STOCK PRICES --------- */
 
-cron.schedule("5 * * * *", () => {
-  console.log('running a task every 5 minutes');
+cron.schedule("*/10 * * * *", () => {
+  console.log('running a task every 10 minutes');
   // write the cron job for updating the stock prices
   // test with minutes, use hourly to avoid API limits
+
+  /*
+    const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      'APCA-API-KEY-ID': `${process.env.APCA-API-KEY-ID}`,
+      'APCA-API-SECRET-KEY': `${process.env.APCA-API-SECRET-KEY}`
+    }
+    };
+
+    # replace ${symbol} with database stock symbols
+  
+    async function fetchPrices() {
+      try {
+        const response = await fetch('https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbol}', options);
+        const data = await response.json();
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchPrices();
+  */
+
 });

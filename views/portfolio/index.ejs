@@ -28,7 +28,7 @@
         <% } %>
         <div>
             <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a>
-            <a href="/portfolio?id=<%= activePortfolio._id %>&remove=true">remove</a>
+            <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
         </div>
         <h2>total: $<%= (activePortfolio.totalValue).toFixed(2) %></h2>
         <h3>holdings</h3>
@@ -36,13 +36,19 @@
 
         <% activePortfolio.userStocks.forEach((userStock) => { %>
             <div class="user-stocks-div">
-                <h4><%= userStock.stock.symbol %> (<%= userStock.stock.companyName %>)</h4>
+                <div>
+                    <img src="<%= userStock.stock.image %>" alt="logo for <%= userStock.stock.companyName %>" />
+                    <h4><%= userStock.stock.symbol %> (<%= userStock.stock.companyName %>)</h4>
+                </div>
                 <p>shares: <%= userStock.quantity %></p>
-                <p>cost basis per share: $<%= (userStock.costBasis).toFixed(2) %></p>
-                <p>total cost: $<%= (userStock.totalCost).toFixed(2) %></p>
-                <p>current price per share: $<%= userStock.stock.price %></p>
+                <p>avg cost per share: $<%= (userStock.costBasis).toFixed(2) %></p>
+                <p>total cost basis: $<%= (userStock.totalCost).toFixed(2) %></p>
+                <p>current price per share: $<%= (userStock.stock.price).toFixed(2) %></p>
                 <p>current value: $<%= userStock.currentValue %></p>
                 <p>unrealized P/L: $<%= userStock.unrealizedPL %> (<%= userStock.unrealizedPLPercent %>%)</p>
+                <% if (activePortfolio.edit) {%>
+                    <a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>">remove stock</a>
+                <% } %>
             </div>
         <% }) %>
 
