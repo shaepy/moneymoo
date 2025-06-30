@@ -6,8 +6,6 @@ const Stock = require("../models/stock.js");
 const router = express.Router();
 const isSignedIn = require("../middleware/is-signed-in.js");
 
-// TODO-ST: need to update the price periodically
-
 /* ------------------------- GET ROUTES ------------------------- */
 
 router.get("/", isSignedIn, async (req, res) => {
@@ -16,6 +14,21 @@ router.get("/", isSignedIn, async (req, res) => {
 
   if (portfolioId) {
     const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
+
+    portfolio.userStocks.forEach((userStock) => {
+      userStock.currentValue = (
+        userStock.stock.price * userStock.quantity
+      ).toFixed(2);
+      userStock.unrealizedPL = (
+        userStock.stock.price * userStock.quantity - userStock.totalCost
+      ).toFixed(2);
+      userStock.unrealizedPLPercent = (
+        ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
+      ).toFixed(2);
+    });
+
+    if (req.query.edit) portfolio.edit = true;
+
     return res.render("portfolio/index", {
       portfolios: null,
       activePortfolio: portfolio,
@@ -23,13 +36,14 @@ router.get("/", isSignedIn, async (req, res) => {
   }
 
   if (user.portfolios.length > 0) {
-    const portfolioTotalValue = user.portfolios.reduce((total, portfolio) => {
+    const portfoliosSumValue = user.portfolios.reduce((total, portfolio) => {
       return total + portfolio.totalValue;
     }, 0);
+
     res.render("portfolio/index", {
       portfolios: user.portfolios,
       activePortfolio: null,
-      portfolioTotalValue,
+      portfoliosSumValue,
     });
   } else {
     res.render("portfolio/index", {
@@ -43,32 +57,6 @@ router.get("/new", isSignedIn, (req, res) => {
   res.render("portfolio/new");
 });
 
-router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId)
-  .populate({
-    path: 'trades',
-    populate: {
-        path: 'stock',
-        model: 'Stock'
-    }
-  });
-  portfolio.trades.forEach((trade) => {
-    trade.dateStr = trade.date.toLocaleDateString('en-us', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-    });
-  });
-
-  console.log('trades after formatting:', portfolio);
-  res.render('portfolio/trades/archive', { portfolio, trades: portfolio.trades });
-});
-
-router.get("/:portfolioId/trades/new", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
-  res.render("portfolio/trades/new", { portfolio });
-});
-
 router.get("/:portfolioId/edit", isSignedIn, async (req, res) => {
   const portfolio = await Portfolio.findById(req.params.portfolioId);
   res.render("portfolio/edit", { portfolio });
@@ -77,6 +65,42 @@ router.get("/:portfolioId/edit", isSignedIn, async (req, res) => {
 router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
   const portfolio = await Portfolio.findById(req.params.portfolioId);
   res.render("portfolio/remove", { portfolio });
+});
+
+router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
+  const portfolio = await Portfolio.findById(req.params.portfolioId)
+  .populate({
+    path: 'trades',
+    populate: {
+        path: 'stock',
+        model: 'Stock',
+    }
+  });
+  portfolio.trades.forEach((trade) => {
+    trade.dateStr = trade.date.toLocaleDateString('en-us', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+  });
+  portfolio.trades.sort((a, b) => b.date - a.date);
+
+  if (req.query) {
+    if (req.query.edit) {
+      const tradeId = req.query.edit;
+      const trade = portfolio.trades.find(trade => trade._id.toString() === tradeId);
+      trade.edit = true;
+    } else {
+      // TODO-ST: it's delete
+      const tradeId = req.query.delete;
+    }
+  }
+  res.render('portfolio/trades/archive', { portfolio, trades: portfolio.trades });
+});
+
+router.get("/:portfolioId/trades/new", isSignedIn, async (req, res) => {
+  const portfolio = await Portfolio.findById(req.params.portfolioId);
+  res.render("portfolio/trades/new", { portfolio });
 });
 
 /* ------------------------ POST ROUTES -------------------------- */
@@ -93,7 +117,7 @@ router.post("/", async (req, res) => {
   res.redirect("/portfolio");
 });
 
-// !Case: HANDLE COMMAS from the price or quantity (no 1,535 passed)
+// TODO-ST: HANDLE COMMAS from the price or quantity (no 1,535 passed)
 // TODO-ST: quantity <= 0 should remove userStock from portfolio ? think*
 
 router.post("/:portfolioId", async (req, res) => {
@@ -131,7 +155,7 @@ router.post("/:portfolioId", async (req, res) => {
     // check for BUY or SELL
     await handleTradeType(portfolio, trades, trade, stock);
   } else {
-    console.log('this is not an existing stock in the portfolio')
+    console.log('this is not an existing stock in the portfolio');
     const userStock = {
       stock: stock._id,
       costBasis: Number(price),
@@ -140,14 +164,11 @@ router.post("/:portfolioId", async (req, res) => {
     };
     portfolio.userStocks.push(userStock);
   }
-
   portfolio.trades.push(trade);
   await portfolio.save();
-  await updatePortfolioTotalValue(portfolio._id);
-
+  await updateportfoliosSumValue(portfolio._id);
   res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
-
 
 /* ------------------------- PUT ROUTES ------------------------ */
 
@@ -156,11 +177,26 @@ router.put("/:portfolioId", async (req, res) => {
   res.redirect(`/portfolio?id=${req.params.portfolioId}`)
 });
 
+router.put("/:portfolioId/trades/:tradeId", async (req, res) => {
+  console.log(req.body);
+  const date = new Date(req.body.date);
+  await Trade.findByIdAndUpdate(req.params.tradeId, {
+    date: date,
+    notes: req.body.notes,
+  });
+  res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
+});
+
 /* ----------------------- DELETE ROUTES ----------------------- */
 
 router.delete("/:portfolioId", async (req, res) => {
-  await Portfolio.findByIdAndDelete(req.params.portfolioId);
-  res.redirect('/portfolio')
+  const portfolio = await Portfolio.findById(req.params.portfolioId);
+  const user = await User.findById(portfolio.userId);
+  user.portfolios.pull(portfolio._id);
+  await user.save();
+  await Trade.deleteMany({ portfolioId: portfolio._id });
+  await portfolio.deleteOne();
+  res.redirect('/portfolio');
 });
 
 /* ------------------------- FUNCTIONS ------------------------- */
@@ -175,7 +211,7 @@ const createStockFromAPI = async (symbol) => {
   return await Stock.create(stock[0]);
 };
 
-const updatePortfolioTotalValue = async (portfolioId) => {
+const updateportfoliosSumValue = async (portfolioId) => {
   const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
   const totalSum = portfolio.userStocks.reduce((total, userStock) => {
     return total + (userStock.quantity * userStock.stock.price)

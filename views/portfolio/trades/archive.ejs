@@ -14,10 +14,26 @@
                 <th>Shares</th>
                 <th>Price/Share</th>
                 <th>Notes</th>
+                <th>Manage</th>
             </tr>
         </thead>
         <tbody>
         <% trades.forEach(trade => { %>
+            <% if (trade.edit) { %>
+            <form action="/portfolio/<%= portfolio._id %>/trades/<%= trade._id %>?_method=PUT" method="POST">
+                <tr>
+                    <td><%= trade.type %></td>
+                    <td><input type="text" name="date" value="<%= trade.dateStr %>" /></td>
+                    <td><%= trade.stock.symbol %></td>
+                    <td><%= trade.quantity %></td>
+                    <td><%= trade.price %></td>
+                    <td><input type="text" name="notes" value="<%= trade.notes %>"/></td>
+                    <td>
+                        <button type="submit">update</button>
+                    </td>
+                </tr>
+            </form>
+            <% } else { %>
             <tr>
                 <td><%= trade.type %></td>
                 <td><%= trade.dateStr %></td>
@@ -25,7 +41,12 @@
                 <td><%= trade.quantity %></td>
                 <td><%= trade.price %></td>
                 <td><%= trade.notes %></td>
+                <td>
+                    <a href="/portfolio/<%= portfolio._id %>/trades?edit=<%= trade._id %>">edit</a> |
+                    <a href="/portfolio/<%= portfolio._id %>/trades?delete=<%= trade._id %>">remove</a>
+                </td>
             </tr>
+            <% } %>
         <% }); %>
         </tbody>
     </table>

@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const session = require('express-session');
+// const MongoStore = require("connect-mongo");
+const cron = require("node-cron");
 
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
@@ -61,4 +63,12 @@ app.use('/search', searchRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
+});
+
+/* --------- REFRESH CURRENT STOCK PRICES --------- */
+
+cron.schedule("5 * * * *", () => {
+  console.log('running a task every 5 minutes');
+  // write the cron job for updating the stock prices
+  // test with minutes, use hourly to avoid API limits
 });

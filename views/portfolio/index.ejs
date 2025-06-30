@@ -2,26 +2,33 @@
     <title>Portfolio</title>
 </head>
 <body>
+    <% if (!activePortfolio) { %>
     <a href="/">Home</a>
     <h1>My Portfolio</h1>
-    <% if (!activePortfolio) { %>
     <a href="/portfolio/new">+ Create portfolio</a>
     <% } %>
 
     <% if (portfolios) { %>
     <h2>overview</h2>
-        <h2>$<%= portfolioTotalValue.toFixed(2) %></h2>
+        <h2>$<%= portfoliosSumValue.toFixed(2) %></h2>
         <% portfolios.forEach(p => { %>
           <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
         <% }); %>
     <% } %>
 
     <% if (activePortfolio) { %>
-        <p><a href="/portfolio">Back</a></p>
-        <h2><%= activePortfolio.name %></h2>
+        <p><a href="/portfolio">Back to Overview</a></p>
+        <% if (activePortfolio.edit) { %>
+            <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST">
+                <input type="text" name="name" value="<%= activePortfolio.name %>" />
+                <button type="submit">update</button>
+            </form>
+        <% } else { %>
+            <h1><%= activePortfolio.name %></h1>
+        <% } %>
         <div>
-            <a href="/portfolio/<%= activePortfolio._id %>/edit">EDIT</a>
-            <a href="/portfolio/<%= activePortfolio._id %>/remove">REMOVE</a>
+            <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a>
+            <a href="/portfolio?id=<%= activePortfolio._id %>&remove=true">remove</a>
         </div>
         <h2>total: $<%= (activePortfolio.totalValue).toFixed(2) %></h2>
         <h3>holdings</h3>
@@ -34,9 +41,8 @@
                 <p>cost basis per share: $<%= (userStock.costBasis).toFixed(2) %></p>
                 <p>total cost: $<%= (userStock.totalCost).toFixed(2) %></p>
                 <p>current price per share: $<%= userStock.stock.price %></p>
-                <p>current value: $<%= (userStock.stock.price * userStock.quantity).toFixed(2) %></p>
-                <p>unrealized P/L: $<%= ((userStock.stock.price * userStock.quantity) - userStock.totalCost).toFixed(2) %> </p>
-                <p>unrealized P/L %: <%= ((((userStock.stock.price * userStock.quantity) - userStock.totalCost) / userStock.totalCost)*100).toFixed(2) %></p>
+                <p>current value: $<%= userStock.currentValue %></p>
+                <p>unrealized P/L: $<%= userStock.unrealizedPL %> (<%= userStock.unrealizedPLPercent %>%)</p>
             </div>
         <% }) %>
 
