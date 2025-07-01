@@ -1,8 +1,13 @@
 <%- include('../partials/_header') %>
-    <title>Search</title>
+<title>Search</title>
 </head>
 <body>
+    <a href="/">Home</a>
     <h1>Search</h1>
-    <p>search for stocks</p>
+    <form action="/search" method="POST">
+        <label for="symbol">Stock Symbol</label>
+        <input type="text" name="symbol" id="symbol" />
+        <button type="submit">Find Stock</button>
+    </form>
 </body>
 </html>

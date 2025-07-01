@@ -12,6 +12,7 @@ const cron = require("node-cron");
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
+const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js")
 const userToView = require("./middleware/user-to-view.js")
 
@@ -60,6 +61,7 @@ app.get('/', (req, res) => {
 app.use('/portfolio', portfolioRoutes);
 app.use('/watchlist', watchlistRoutes);
 app.use('/search', searchRoutes);
+app.use('/stock', stockRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
@@ -70,7 +72,7 @@ app.listen(process.env.PORT, () => {
 cron.schedule("*/10 * * * *", () => {
   console.log('running a task every 10 minutes');
   // write the cron job for updating the stock prices
-  // test with minutes, use hourly to avoid API limits
+  // test with minutes, 1 ping per minute (200/min max)
 
   /*
     const options = {

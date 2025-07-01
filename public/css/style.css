@@ -19,13 +19,6 @@ td input[type="text"] {
     width: 80%;
 }
 
-div.user-stocks-div img {
+td img {
     width: 20px;
-}
-
-div.user-stocks-div div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
 }

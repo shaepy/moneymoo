@@ -1,0 +1,12 @@
+<%- include('../partials/_header') %>
+    <title>Watchlist</title>
+</head>
+<body>
+    <h1>Create Watchlist</h1>
+    <form action="/watchlist" method="POST">
+        <label for="name">Watchlist Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter watchlist name" required />
+        <button type="submit">Create Watchlist</button>
+    </form>
+</body>
+</html>

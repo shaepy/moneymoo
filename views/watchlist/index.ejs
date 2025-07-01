@@ -2,7 +2,22 @@
     <title>Watchlist</title>
 </head>
 <body>
+    <a href="/">Home</a>
     <h1>Watchlist</h1>
-    <p>money mooooooves</p>
+    <% if (!activeWatchlist) { %>
+    <a href="/watchlist/new">+ Create watchlist</a>
+    <% } %>
+
+    <% if (watchlists) { %>
+        <h2>Overview</h2>
+        <% watchlists.forEach(list => { %>
+          <p><a href="/watchlist?id=<%= list._id %>"><%= list.name %></a></p>
+        <% }); %>
+    <% } %>
+
+    <% if (activeWatchlist) { %>
+        <p><a href="/watchlist">Back to Watchlists</a></p>
+        <h2><%= activeWatchlist.name %></h2>
+    <% } %>
 </body>
 </html>

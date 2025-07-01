@@ -1,0 +1,15 @@
+<%- include('../partials/_header') %>
+<title>Search</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+    <p><%= results.length %> results found.</p>
+    <% results.forEach((result) => { %>
+    <div>
+        <p><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
+        <p>Name: <%= result.name %></p>
+        <p>Exchange: <%= result.exchangeFullName %> (<%= result.exchange %>)</p>
+    </div>
+    <% }) %>
+</body>
+</html>
