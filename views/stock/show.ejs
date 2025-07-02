@@ -1,0 +1,73 @@
+<%- include('../partials/_header') %>
+    <title><%= stock.symbol %></title>
+</head>
+<body>
+    <h1><%= stock.symbol %></h1>
+    <h2><%= stock.companyName %></h2>
+    <h2>$<%= stock.price %></h2>
+
+    <a href="">+ Add to Watchlist</a>
+
+    <h3>Stock Details</h3>
+    <p>Market Cap: <%= stock.marketCap %></p>
+    <p>Day Change: <%= stock.change %> (<%= stock.changePercentage %>%)</p>
+    <p>Volume: <%= stock.volume %></p>
+    <p>Average Volume: <%= stock.averageVolume %></p>
+    <p>Price Range: <%= stock.range %></p>
+
+    <h3>Company Profile</h3>
+    <img src="<%= stock.image %>" alt="logo for <%= stock.symbol %>"/>
+    <p>Website: <%= stock.website %></p>
+    <p>Exchange: <%= stock.exchange %></p>
+    <p>About: <%= stock.description %></p>
+    <p>Country: <%= stock.country %></p>
+    <p>Sector: <%= stock.sector %></p>
+    <p>Industry: <%= stock.industry %></p>
+    <p>CEO: <%= stock.ceo %></p>
+    <% if (stock.isEtf) { %>
+    <p>This stock is an exchange-traded fund.</p>
+    <% } %>
+    <% if (stock.isFund) { %>
+    <p>This stock is an mutual fund.</p>
+    <% } %>
+
+    <% if (financials) { %>
+    <h3>Trading Financials</h3>
+    <p>52 Week High: <%= financials['52WeekHigh'] %> (<%= financials['52WeekHighDate'] %>)</p>
+    <p>52 Week Low: <%= financials['52WeekLow'] %> (<%= financials['52WeekLowDate'] %>)</p>
+    <p>10Day Avg Trading Volume: <%= financials['10DayAverageTradingVolume'] %></p>
+    <p>YTD Price Return Daily: <%= (financials.yearToDatePriceReturnDaily).toFixed(2) %></p>
+
+    <h3>Basic Financials</h3>
+    <h4>Price-to-Earnings</h4>
+    <p>Ratio: <%= (financials.peAnnual).toFixed(2) %></p>
+    <p>Normalized: <%= (financials.peNormalizedAnnual).toFixed(2) %></p>
+
+    <h4>Earnings Per Share</h4>
+    <p>Annual: <%= (financials.epsAnnual).toFixed(2) %></p>
+    <p>3Y Growth: <%= (financials.epsGrowth3Y).toFixed(2) %></p>
+    <p>5Y Growth: <%= (financials.epsGrowth5Y).toFixed(2) %></p>
+    <p>Quarterly YOY Growth: <%= (financials.epsGrowthQuarterlyYoy).toFixed(2) %></p>
+    <p></p>
+
+    <h4>Price-to-Book</h4>
+    <p>Ratio: <%= (financials.pb).toFixed(2) %></p>
+    <p>Annual Ratio: <%= (financials.pbAnnual).toFixed(2) %></p>
+    <p>Quarterly Ratio: <%= (financials.pbQuarterly).toFixed(2) %></p>
+
+    <h4>Cash Flow Per Share</h4>
+    <p>TTM: <%= (financials.cashFlowPerShareTTM).toFixed(2) %></p>
+    <p>Annual: <%= (financials.cashFlowPerShareAnnual).toFixed(2) %></p>
+    <p>Quarterly: <%= (financials.cashFlowPerShareQuarterly).toFixed(2) %></p>
+
+    <p>Revenue</p>
+    <p>3Y Growth: <%= (financials.revenueGrowth3Y).toFixed(2) %></p>
+    <p>5Y Growth: <%= (financials.revenueGrowth5Y).toFixed(2) %></p>
+    <p>Quarterly YOY: <%= (financials.revenueGrowthQuarterlyYoy).toFixed(2) %></p>
+    <p>Per Share Annual: <%= (financials.revenuePerShareAnnual).toFixed(2) %></p>
+    <p>Per Share TTM: <%= (financials.revenuePerShareTTM).toFixed(2) %></p>
+    <p>5Y Share Growth: <%= (financials.revenueShareGrowth5Y).toFixed(2) %></p>
+    <% } %>
+
+</body>
+</html>

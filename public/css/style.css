@@ -22,3 +22,7 @@ td input[type="text"] {
 td img {
     width: 20px;
 }
+
+body img {
+    width: 50px;
+}
