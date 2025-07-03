@@ -4,29 +4,29 @@ const tradeSchema = new mongoose.Schema({
     stock: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Stock",
-        required: true
+        required: true,
     },
     date: {
         type: Date,
-        required: true
+        required: true,
     },
     quantity: {
         type: Number,
-        required: true
+        required: true,
     },
     price: {
         type: Number,
-        required: true
+        required: true,
     },
     portfolioId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Portfolio",
-        required: true
+        required: true,
     },
     type: {
         type: String,
         enum: ['buy', 'sell'],
-        required: true
+        required: true,
     },
     notes: { type: String },
 });

@@ -4,15 +4,17 @@ const watchlistSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
     },
     stocks: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Stock"
+        ref: "Stock",
+        unique: true,
     }],
 });
 

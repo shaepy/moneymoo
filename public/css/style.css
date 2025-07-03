@@ -19,10 +19,10 @@ td input[type="text"] {
     width: 80%;
 }
 
-td img {
-    width: 20px;
-}
-
 body img {
     width: 50px;
+}
+
+td img {
+    width: 20px;
 }

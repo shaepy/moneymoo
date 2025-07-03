@@ -17,11 +17,13 @@ const userSchema = new mongoose.Schema({
     },
     watchlists: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Watchlist"
+        ref: "Watchlist",
+        unique: true,
     }],
     portfolios: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Portfolio"
+        ref: "Portfolio",
+        unique: true,
     }],
 });
 

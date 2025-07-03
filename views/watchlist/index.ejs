@@ -3,21 +3,64 @@
 </head>
 <body>
     <a href="/">Home</a>
-    <h1>Watchlist</h1>
     <% if (!activeWatchlist) { %>
+    <h1>Watchlist</h1>
     <a href="/watchlist/new">+ Create watchlist</a>
     <% } %>
 
     <% if (watchlists) { %>
-        <h2>Overview</h2>
-        <% watchlists.forEach(list => { %>
-          <p><a href="/watchlist?id=<%= list._id %>"><%= list.name %></a></p>
-        <% }); %>
+    <h2>Overview</h2>
+    <% watchlists.forEach(list => { %>
+        <p><a href="/watchlist?id=<%= list._id %>"><%= list.name %></a></p>
+    <% }); %>
     <% } %>
 
     <% if (activeWatchlist) { %>
-        <p><a href="/watchlist">Back to Watchlists</a></p>
-        <h2><%= activeWatchlist.name %></h2>
+    <p><a href="/watchlist">Back to Watchlists</a></p>
+    <h1><%= activeWatchlist.name %></h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Day Change</th>
+                <th>Day Change %</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% activeWatchlist.stocks.forEach((stock) => { %>
+            <tr>
+                <td><a href="/stock/<%= stock.symbol %>"><%= stock.symbol %></a></td>
+                <td><%= stock.price %></td>
+                <td><%= (stock.change).toFixed(2) %></td>
+                <td><%= (stock.changePercentage).toFixed(2) %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } %>
+
+    <% if (stocks) { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Day Change</th>
+                <th>Day Change %</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% stocks.forEach((stock) => { %>
+            <tr>
+                <td><a href="/stock/<%= stock.symbol %>"><%= stock.symbol %></a></td>
+                <td><%= stock.price %></td>
+                <td><%= (stock.change).toFixed(2) %></td>
+                <td><%= (stock.changePercentage).toFixed(2) %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
     <% } %>
 </body>
 </html>

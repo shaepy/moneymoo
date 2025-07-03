@@ -5,6 +5,7 @@ const Trade = require("../models/trade.js");
 const Stock = require("../models/stock.js");
 const router = express.Router();
 const isSignedIn = require("../middleware/is-signed-in.js");
+const utils = require("../utils/serverUtils.js");
 
 /* ------------------------- GET ROUTES ------------------------- */
 
@@ -131,7 +132,7 @@ router.post("/:portfolioId", async (req, res) => {
 
   let stock = await Stock.findOne({ symbol: symbol });
   console.log("did we find a stock?:", stock);
-  if (!stock) stock = await createStockFromAPI(symbol);
+  if (!stock) stock = await utils.createStockFromAPI(symbol);
 
   const trades = await Trade.find({
     $and: [{ stock: stock._id }, { portfolioId: portfolio._id }],
@@ -157,7 +158,7 @@ router.post("/:portfolioId", async (req, res) => {
 
   if (trades.length > 0) {
     // check for BUY or SELL
-    await handleTradeType(portfolio, trades, trade, stock);
+    await utils.handleTradeType(portfolio, trades, trade, stock);
   } else {
     console.log('not an existing stock in the portfolio');
     const userStock = {
@@ -170,7 +171,7 @@ router.post("/:portfolioId", async (req, res) => {
   }
   portfolio.trades.push(trade);
   await portfolio.save();
-  await updatePortfolioTotalValue(portfolio._id);
+  await utils.updatePortfolioTotalValue(portfolio._id);
   res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
 
@@ -227,7 +228,7 @@ router.delete("/:portfolioId/trades/:tradeId", async (req, res) => {
   portfolio.trades.pull(req.params.tradeId);
   await trade.deleteOne();
   await portfolio.save();
-  await updatePortfolioTotalValue(portfolio._id);
+  await utils.updatePortfolioTotalValue(portfolio._id);
   res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
 });
 
@@ -244,71 +245,8 @@ router.delete("/:portfolioId/stocks/:stockId", async (req, res) => {
   portfolio.userStocks.pull(userStock._id);
   await portfolio.save();
   await Trade.deleteMany({ $and: [{ stock: userStock.stock._id }, { portfolioId: portfolio._id }] });
-  await updatePortfolioTotalValue(portfolio._id);
+  await utils.updatePortfolioTotalValue(portfolio._id);
   res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
-
-/* ------------------------- FUNCTIONS ------------------------- */
-
-const createStockFromAPI = async (symbol) => {
-  const response = await fetch(
-    `https://financialmodelingprep.com/stable/profile?symbol=${symbol}&apikey=${process.env.FMP_APIKEY}`
-  );
-  if (!response.ok) throw new Error("Failed to fetch stock data");
-  const stock = await response.json();
-  console.log("API response stock:", stock);
-  return await Stock.create(stock[0]);
-};
-
-const updatePortfolioTotalValue = async (portfolioId) => {
-  const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
-  const totalSum = portfolio.userStocks.reduce((total, userStock) => {
-    return total + (userStock.quantity * userStock.stock.price)
-  }, 0);
-  portfolio.totalValue = totalSum;
-  await portfolio.save();
-  console.log('portfolio is saved/updated now:', portfolio);
-};
-
-const getCurrentTotals = (trades) => {
-  const currentTotalCost = trades.reduce((total, trade) => total + trade.quantity * trade.price, 0);
-  console.log("currentTotalCost:", currentTotalCost);
-  const currentTotalNumOfShares = trades.reduce((total, trade) => total + trade.quantity, 0);
-  console.log("currentTotalNumOfShares:", currentTotalNumOfShares);
-  return { currentTotalCost, currentTotalNumOfShares };
-};
-
-const calculateNewTotals = (currentTotalCost, currentTotalNumOfShares, trade) => {
-  const newTotalCost = currentTotalCost + trade.quantity * trade.price;
-  console.log("newTotalCost:", newTotalCost);
-  const newTotalQuantity = currentTotalNumOfShares + trade.quantity;
-  console.log("newTotalQuantity:", newTotalQuantity);
-  const newAvgCostBasis = newTotalCost / newTotalQuantity;
-  console.log("newAvgCostBasis:", newAvgCostBasis);
-  return { newTotalCost, newTotalQuantity, newAvgCostBasis };
-};
-
-const handleTradeType = async (portfolio, trades, trade, stock) => {
-  const userStock = portfolio.userStocks.find((userSt) => {
-    return userSt.stock._id.toString() === stock._id.toString();
-  });
-  if (trade.type.toLowerCase() === "buy") {
-    console.log("this is a BUY trade");
-    const { currentTotalCost, currentTotalNumOfShares } = getCurrentTotals(trades);
-    const { newAvgCostBasis, newTotalQuantity, newTotalCost } =
-      calculateNewTotals(currentTotalCost, currentTotalNumOfShares, trade);
-    userStock.set({
-      costBasis: newAvgCostBasis,
-      quantity: newTotalQuantity,
-      totalCost: newTotalCost,
-    });
-  } else {
-    console.log("this is a SELL trade");
-    userStock.set({
-      quantity: userStock.quantity - trade.quantity,
-      totalCost: userStock.totalCost - userStock.costBasis * trade.quantity,
-    });
-  }
-};
 
 module.exports = router;

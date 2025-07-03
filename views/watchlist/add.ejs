@@ -1,0 +1,17 @@
+<%- include('../partials/_header') %>
+<title>Watchlist</title>
+</head>
+<body>
+    <h1>Add to Watchlist</h1>
+    <p>Select the watchlists you want to add <%= stock.symbol %> to.</p>
+     <form action="/watchlist/add/<%= stock._id %>" method="POST">
+        <% watchlists.forEach(watchlist => { %>
+        <div>
+            <input type="checkbox" id="<%= watchlist.name %>" name="<%= watchlist.name %>" />
+            <label for="<%= watchlist.name %>"><%= watchlist.name %></label>
+        </div>
+        <% }); %>
+        <button type="submit">Save</button>
+     </form>
+</body>
+</html>

@@ -1,27 +1,49 @@
 const express = require("express");
 const router = express.Router();
+const utils = require("../utils/serverUtils.js");
 
 /* ------------------------- GET ROUTES -------------------------- */
 
 router.get('/', (req, res) => {
-    res.send('stock index');
+    res.redirect('/search');
 });
 
 router.get('/:stockSymbol', async (req, res) => {
-    // grab data from API to create the show pages
-    const profile = await fetchStockProfileFromAPI(req.params.stockSymbol);
-    console.log("API RESPONSE FOR STOCK PROFILE:", profile);
+    const profile = await utils.fetchStockProfileFromAPI(req.params.stockSymbol);
+    const metrics = await utils.fetchFinancialsFromAPI(req.params.stockSymbol);
 
-    // MUTUAL FUNDS ARE NOT SUPPORTED FOR FINANCIALS
-    const financials = await fetchFinancialsFromAPI(req.params.stockSymbol);
-    console.log("API RESPONSE FOR BASIC FINANCIALS:", financials);
+    if (!metrics) return res.render(`stock/show`, { stock: profile, financials: null });
+    const financials = {
+        '52WeekHigh': metrics.metric['52WeekHigh'] || null,
+        '52WeekHighDate': metrics.metric['52WeekHighDate'] || null,
+        '52WeekLow': metrics.metric['52WeekLow'] || null,
+        '52WeekLowDate': metrics.metric['52WeekLowDate'] || null,
+        '10DayAverageTradingVolume': metrics.metric['10DayAverageTradingVolume'] || null,
+        yearToDatePriceReturnDaily: metrics.metric.yearToDatePriceReturnDaily || null,
+        monthToDatePriceReturnDaily: metrics.metric.monthToDatePriceReturnDaily || null,
+        currentRatioAnnual: metrics.metric.currentRatioAnnual || null,
+        currentRatioQuarterly: metrics.metric.currentRatioQuarterly || null,
+        peTTM: metrics.metric.peTTM || null,
+        epsAnnual: metrics.metric.epsAnnual || null,
+        epsGrowth3Y: metrics.metric.epsGrowth3Y || null,
+        epsGrowth5Y: metrics.metric.epsGrowth5Y || null,
+        epsGrowthQuarterlyYoy: metrics.metric.epsGrowthQuarterlyYoy || null,
+        pb: metrics.metric.pb || null,
+        pbAnnual: metrics.metric.pbAnnual || null,
+        pbQuarterly: metrics.metric.pbQuarterly || null,
+        cashFlowPerShareTTM: metrics.metric.cashFlowPerShareTTM || null,
+        cashFlowPerShareAnnual: metrics.metric.cashFlowPerShareAnnual || null,
+        cashFlowPerShareQuarterly: metrics.metric.cashFlowPerShareQuarterly || null,
+        revenueGrowth3Y: metrics.metric.revenueGrowth3Y || null,
+        revenueGrowth5Y: metrics.metric.revenueGrowth5Y || null,
+        revenueGrowthQuarterlyYoy: metrics.metric.revenueGrowthQuarterlyYoy || null,
+        revenuePerShareAnnual: metrics.metric.revenuePerShareAnnual || null,
+        revenuePerShareTTM: metrics.metric.revenuePerShareTTM || null,
+        revenueShareGrowth5Y: metrics.metric.revenueShareGrowth5Y || null,
+    };
+    console.log("FINANCIALS SAVED:", financials);
 
-    if (!financials) return res.render(`stock/show`, { stock: profile, financials: null });
-
-    res.render(`stock/show`, {
-        stock: profile,
-        financials: financials.metric,
-    });
+    res.render(`stock/show`, { stock: profile, financials: financials });
 });
 
 /* ------------------------- POST ROUTES -------------------------- */
@@ -29,25 +51,5 @@ router.get('/:stockSymbol', async (req, res) => {
 /* ------------------------- PUT ROUTES -------------------------- */
 
 /* ------------------------ DELETE ROUTES ------------------------ */
-
-/* ------------------------- FUNCTIONS --------------------------- */
-
-const fetchStockProfileFromAPI = async (symbol) => {
-  const response = await fetch(
-    `https://financialmodelingprep.com/stable/profile?symbol=${symbol}&apikey=${process.env.FMP_APIKEY}`
-  );
-  if (!response.ok) throw new Error("Failed to fetch stock profile data");
-  const stock = await response.json();
-  return stock[0];
-};
-
-const fetchFinancialsFromAPI = async(symbol) => {
-    const response = await fetch(
-        `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${process.env.FINNHUB_APIKEY}`
-    );
-    if (!response.ok) throw new Error("Failed to fetch financial data for stock");
-    const financials = await response.json();
-    return financials;  
-};
 
 module.exports = router;

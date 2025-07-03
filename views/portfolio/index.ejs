@@ -54,7 +54,7 @@
                 <tr>
                     <td>
                         <img src="<%= userStock.stock.image %>" alt="logo for <%= userStock.stock.companyName %>" />
-                        <%= userStock.stock.symbol %>
+                        <a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a>
                     </td>
                     <td><%= userStock.quantity %></td>
                     <td>$<%= (userStock.stock.price).toFixed(2) %></td>
