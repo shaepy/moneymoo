@@ -1,0 +1,20 @@
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <div class="navbar-item">moneymoo</div>
+    </div>
+    <div class="navbar-menu">
+        <div class="navbar-start">
+            <a href="/" class="navbar-item">Home</a>
+            <% if (user) { %>
+            <a href="/portfolio" class="navbar-item">Portfolio</a>
+            <a href="/watchlist" class="navbar-item">Watchlist</a>
+            <a href="/search" class="navbar-item">Search</a>
+            <% } %>
+        </div>
+        <% if (user) { %>
+        <div class="navbar-end">
+            <a href="/auth/sign-out" class="navbar-item">Log Out</a>
+        </div>
+        <% } %>
+    </div>
+</nav>

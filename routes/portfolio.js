@@ -60,11 +60,6 @@ router.get("/new", isSignedIn, (req, res) => {
   res.render("portfolio/new");
 });
 
-router.get("/:portfolioId/edit", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
-  res.render("portfolio/edit", { portfolio });
-});
-
 // * for both userStocks and portfolios
 router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
   const stockId = req.query.id;

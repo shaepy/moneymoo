@@ -2,16 +2,19 @@
 <title>Watchlist</title>
 </head>
 <body>
-    <h1>Add to Watchlist</h1>
-    <p>Select the watchlists you want to add <%= stock.symbol %> to.</p>
-     <form action="/watchlist/add/<%= stock._id %>" method="POST">
+    <%- include('../partials/_navbar') %>
+    <h1 class="is-size-3">Add to Watchlist</h1>
+     <form action="/watchlist/add/<%= stock._id %>" method="POST" class="box">
+        <p>Select the watchlists you want to add <%= stock.symbol %> to.</p>
         <% watchlists.forEach(watchlist => { %>
         <div class="checkboxes">
-            <input type="checkbox" id="<%= watchlist.name %>" name="<%= watchlist.name %>" />
-            <label for="<%= watchlist.name %>"><%= watchlist.name %></label>
+            <label for="<%= watchlist.name %>" class="checkbox label">
+                <input type="checkbox" id="<%= watchlist.name %>" name="<%= watchlist.name %>" />
+                <%= watchlist.name %>
+            </label>
         </div>
         <% }); %>
-        <button type="submit" class="button is-light is-link">Save</button>
+        <button type="submit" class="button is-link">Save</button>
      </form>
 </body>
 </html>

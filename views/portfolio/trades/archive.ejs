@@ -2,10 +2,11 @@
     <title>Trades</title>
 </head>
 <body>
-    <h1>Trades</h1>
+    <%- include('../../partials/_navbar') %>
+    <h1 class="is-size-3"><%= portfolio.name %></h1>
     <a href="/portfolio?id=<%= portfolio._id %>">Back to Portfolio</a>
-    <h2><%= portfolio.name %></h2>
-    <table>
+    <h2 class="is-size-4">Trades</h2>
+    <table class="table is-fullwidth is-hoverable">
         <thead>
             <tr>
                 <th>Type</th>
@@ -29,7 +30,7 @@
                     <td><%= trade.price %></td>
                     <td><input type="text" name="notes" value="<%= trade.notes %>" class="input is-normal" /></td>
                     <td>
-                        <button type="submit" class="button is-light is-link">update</button>
+                        <button type="submit" class="button is-link">update</button>
                     </td>
                 </tr>
             </form>

@@ -14,7 +14,6 @@ const watchlistSchema = new mongoose.Schema({
     stocks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Stock",
-        unique: true,
     }],
 });
 

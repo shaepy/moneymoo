@@ -2,12 +2,15 @@
     <title>Watchlist</title>
 </head>
 <body>
+    <%- include('../partials/_navbar') %>
     <a href="/watchlist">Back to Watchlists</a>
-    <h1>Create Watchlist</h1>
-    <form action="/watchlist" method="POST">
-        <label for="name">Watchlist Name</label>
-        <input type="text" id="name" name="name" placeholder="Enter watchlist name" required class="input is-normal"/>
-        <button type="submit" class="button is-light is-primary">Create Watchlist</button>
+    <h1 class="is-size-3">Create Watchlist</h1>
+    <form action="/watchlist" method="POST" class="box">
+        <div class="field">
+            <label for="name" class="label">Watchlist Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter watchlist name" required class="input is-normal"/>
+        </div>
+        <button type="submit" class="button is-link">Create Watchlist</button>
     </form>
 </body>
 </html>

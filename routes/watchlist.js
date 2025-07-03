@@ -14,6 +14,7 @@ router.get('/', isSignedIn, async (req, res) => {
   console.log('WATCHLISTS FOUND:', watchlists);
   if (watchlistId) {
     const watchlist = await Watchlist.findById(watchlistId).populate('stocks');
+    if (req.query.edit) watchlist.edit = true;
       return res.render("watchlist/index", {
       watchlists: null,
       activeWatchlist: watchlist,
@@ -78,9 +79,15 @@ router.get('/add', isSignedIn, async (req, res) => {
   });
 });
 
+router.get("/:watchlistId/remove", isSignedIn, async (req, res) => {
+  const watchlist = await Watchlist.findById(req.params.watchlistId).populate("stocks");
+  res.render("watchlist/remove", {
+    watchlist,
+  });
+});
+
 /* ------------------------ POST ROUTES -------------------------- */
 
-// new watchlist
 router.post('/', async (req, res) => {
   const watchlist = await Watchlist.create({ userId: req.session.user._id, name: req.body.name });
   const user = await User.findById(req.session.user._id);
@@ -93,10 +100,9 @@ router.post('/', async (req, res) => {
 router.post('/add/:stockId', async (req, res) => {
   const {...formData} = req.body;
   console.log('WATCHLIST DATA FROM FORM:', formData);
-
   // * no watchlists were selected
   if (Object.keys(formData).length < 1) return res.redirect('/watchlist');
-  
+
   Object.keys(formData).forEach(watchlist => {
     if (formData[watchlist] === 'on') formData[watchlist] = true;
     console.log(`${watchlist}: ${formData[watchlist]}`);
@@ -124,8 +130,30 @@ router.post('/add/:stockId', async (req, res) => {
 
 /* ------------------------ PUT ROUTES --------------------------- */
 
+router.put('/:watchlistId', async (req, res) => {
+  await Watchlist.findByIdAndUpdate(req.params.watchlistId, { name: req.body.name });
+  res.redirect(`/watchlist?id=${req.params.watchlistId}`);
+});
+
+// PUT that acts as a delete (removing stocks from watchlist
+router.put('/:watchlistId/remove', async (req, res) => {
+  const watchlist = await Watchlist.findById(req.params.watchlistId).populate("stocks");
+  const stockId = req.query.id;
+  watchlist.stocks.pull(stockId);
+  await watchlist.save();
+  res.redirect(`/watchlist?id=${watchlist._id}`);
+});
+
 /* ----------------------- DELETE ROUTES ------------------------- */
 
+router.delete('/:watchlistId', async (req, res) => {
+  const watchlist = await Watchlist.findById(req.params.watchlistId);
+  const user = await User.findById(watchlist.userId);
+  user.watchlists.pull(watchlist._id);
+  await user.save();
+  await watchlist.deleteOne();
+  res.redirect('/watchlist');
+});
 
 module.exports = router;
 

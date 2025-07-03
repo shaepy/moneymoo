@@ -1,0 +1,13 @@
+<%- include('../partials/_header') %>
+    <title>Watchlist</title>
+</head>
+<body>
+    <%- include('../partials/_navbar') %>
+    <h1 class="is-size-3">Remove Watchlist</h1>
+    <p>Are you sure you want to remove <strong><%= watchlist.name %></strong>?</p>
+    <p>This will delete the watchlist and any stocks you have on it.
+    <form action="/watchlist/<%= watchlist._id %>?_method=DELETE" method="POST">
+        <button type="submit" class="button is-light is-danger">Delete <%= watchlist.name %></button>
+    </form>
+</body>
+</html>

@@ -2,7 +2,8 @@
 <title>Search</title>
 </head>
 <body>
-    <h1>Search Results</h1>
+    <%- include('../partials/_navbar') %>
+    <h1 class="is-size-3">Search Results</h1>
     <% if (results) { %>
     <p><%= results.length %> results found.</p>
         <% results.forEach((result) => { %>

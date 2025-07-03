@@ -2,12 +2,14 @@
 <title>Search</title>
 </head>
 <body>
-    <a href="/">Home</a>
-    <h1>Search</h1>
-    <form action="/search" method="POST">
-        <label for="symbol">Stock Symbol</label>
-        <input type="text" name="symbol" id="symbol" class="input is-normal" required />
-        <button type="submit" class="button is-light is-link">Find Stock</button>
+    <%- include('../partials/_navbar') %>
+    <h1 class="is-size-3">Search</h1>
+    <form action="/search" method="POST" class="box">
+        <div class="field">
+            <label for="symbol" class="label">Stock Symbol</label>
+            <input type="text" name="symbol" id="symbol" class="input is-normal" required placeholder="GOOG"/>
+        </div>
+        <button type="submit" class="button is-link">Find Stock</button>
     </form>
 </body>
 </html>

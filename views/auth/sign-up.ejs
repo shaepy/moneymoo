@@ -2,32 +2,32 @@
     <title>moneymoo</title>
 </head>
 <body>
-    <a href="/">Home</a>
-    <h1>Sign Up</h1>
-     <% if (userExists) { %>
-    <p><a href="/auth/sign-in">Log In</a> to your account</p>
-    <% } %>
-    <% if (passwordsDontMatch) { %>
-        <p>Passwords do not match.</p>
-    <% } %>
-    <form action="/auth/sign-up" method="POST" id="new-account-form">
-        <div>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required class="input is-normal"/>
-        </div>
-        <div>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required class="input is-normal" />
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required class="input is-normal" />
-        </div>
-        <div>
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required class="input is-normal" />
-        </div>
-        <button type="submit" class="button is-light is-link">Create an account</button>
-    </form>
+    <%- include('../partials/_navbar') %>
+        <h1 class="is-size-3">Sign Up</h1>
+        <% if (userExists) { %>
+        <p><a href="/auth/sign-in">Log In</a> to your account</p>
+        <% } %>
+        <% if (passwordsDontMatch) { %>
+            <p>Passwords do not match.</p>
+        <% } %>
+        <form action="/auth/sign-up" method="POST" class="box">
+            <div class="field">
+                <label for="username" class="label">Username</label>
+                <input type="text" id="username" name="username" required class="input is-normal"/>
+            </div>
+            <div class="field">
+                <label for="email" class="label">Email</label>
+                <input type="email" id="email" name="email" required class="input is-normal" />
+            </div>
+            <div class="field">
+                <label for="password" class="label">Password</label>
+                <input type="password" id="password" name="password" required class="input is-normal" />
+            </div>
+            <div class="field">
+                <label for="confirmPassword" class="label">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required class="input is-normal" />
+            </div>
+            <button type="submit" class="button is-link">Create an account</button>
+        </form>
 </body>
 </html>
