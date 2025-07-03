@@ -1,13 +1,14 @@
 const express = require("express");
-const Watchlist = require("../models/watchlist.js");
 const router = express.Router();
 const utils = require("../utils/serverUtils.js");
 const Stock = require("../models/stock.js");
-const stock = require("../models/stock.js");
+const User = require("../models/user.js");
+const Watchlist = require("../models/watchlist.js");
+const isSignedIn = require("../middleware/is-signed-in.js");
 
 /* ------------------------- GET ROUTES ------------------------- */
 
-router.get('/', async (req, res) => {
+router.get('/', isSignedIn, async (req, res) => {
   const watchlistId = req.query.id;
   const watchlists = await Watchlist.find({ userId: req.session.user._id }).populate('stocks');
   console.log('WATCHLISTS FOUND:', watchlists);
@@ -26,19 +27,17 @@ router.get('/', async (req, res) => {
       stocks: null,
      });
   }
-
   const stockLists = watchlists.filter(list => list.stocks.length > 0).map(list => list.stocks).flat();
+  console.log('CONSOLIDATED LISTS:', stockLists);
   if (stockLists.length < 1 && stockLists) {
     console.log('NO STOCKS FOUND');
-    res.render('watchlist/index', {
+    return res.render('watchlist/index', {
       watchlists: watchlists,
       activeWatchlist: null,
       stocks: null,
     });
   }
-
   const stocks = [...new Set(stockLists)];
-  console.log('CONSOLIDATED LISTS:', stockLists);
   console.log('FINAL LIST:', stocks);
 
   res.render('watchlist/index', {
@@ -48,15 +47,14 @@ router.get('/', async (req, res) => {
   });
 });
 
-router.get('/new', (req, res) => {
+router.get('/new', isSignedIn, (req, res) => {
   res.render('watchlist/new');
 });
 
-router.get('/add', async (req, res) => {
+router.get('/add', isSignedIn, async (req, res) => {
   const { symbol } = req.query;
   console.log('SYMBOL FROM REQ.QUERY:', symbol);
 
-  // FIND THE STOCK IN DATABASE
   let stock = await Stock.findOne({ symbol: symbol });
   console.log('FOUND STOCK?:', stock);
 
@@ -82,11 +80,16 @@ router.get('/add', async (req, res) => {
 
 /* ------------------------ POST ROUTES -------------------------- */
 
+// new watchlist
 router.post('/', async (req, res) => {
-  await Watchlist.create({ userId: req.session.user._id, name: req.body.name });
+  const watchlist = await Watchlist.create({ userId: req.session.user._id, name: req.body.name });
+  const user = await User.findById(req.session.user._id);
+  user.watchlists.push(watchlist);
+  await user.save();
   res.redirect('/watchlist');
 });
 
+// add stock to watchlist
 router.post('/add/:stockId', async (req, res) => {
   const {...formData} = req.body;
   console.log('WATCHLIST DATA FROM FORM:', formData);
@@ -116,8 +119,6 @@ router.post('/add/:stockId', async (req, res) => {
       }
     });
   });
-
-  // add to all the watchlists selected 
   res.redirect('/watchlist');
 });
 

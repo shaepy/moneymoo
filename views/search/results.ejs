@@ -3,13 +3,17 @@
 </head>
 <body>
     <h1>Search Results</h1>
+    <% if (results) { %>
     <p><%= results.length %> results found.</p>
-    <% results.forEach((result) => { %>
-    <div>
-        <p><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
-        <p>Name: <%= result.name %></p>
-        <p>Exchange: <%= result.exchangeFullName %> (<%= result.exchange %>)</p>
-    </div>
-    <% }) %>
+        <% results.forEach((result) => { %>
+        <div>
+            <p><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
+            <p>Name: <%= result.name %></p>
+            <p>Exchange: <%= result.exchangeFullName %> (<%= result.exchange %>)</p>
+        </div>
+        <% }) %>
+    <% } else { %>
+        <p>No results found.</p>
+    <% } %>
 </body>
 </html>

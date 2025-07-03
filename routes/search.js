@@ -8,24 +8,21 @@ router.get('/', (req, res) => {
 });
 
 router.get('/results', (req, res) => {
-    console.log('REQ.SESSION.SEARCHRESULTS:', req.session.searchResults);
-    res.render('search/results', { results: req.session.searchResults })
+  console.log('REQ.SESSION.SEARCHRESULTS:', req.session.searchResults);
+  if (req.session.searchResults.length <= 0) return res.render('search/results', { results: null });
+  res.render('search/results', { results: req.session.searchResults });
 });
 
 /* ------------------------- POST ROUTES ------------------------- */
 
 // returns from search input
 router.post("/", async (req, res) => {
-  // user gives us a symbol
-  const { symbol } = req.body;
-  
-  // we stick this in FMP API to get the results
-  const results = await fetchResultsFromAPI(symbol);
+  const results = await fetchResultsFromAPI(req.body.symbol);
+  console.log('RESULTS JSON', results);
   const validResults = results.filter((result) => {
     return (result.exchange !== "OTC" && result.exchange !== "CRYPTO" && !result.symbol.includes("."));
   });
-
-  // save results to req.session.searchResults
+  console.log('VALID RESULTS:', validResults)
   req.session.searchResults = validResults;
   res.redirect("/search/results");
 });
@@ -41,6 +38,7 @@ const fetchResultsFromAPI = async (symbol) => {
     `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${process.env.FMP_APIKEY}`
   );
   if (!response.ok) throw new Error("Failed to fetch stock search results");
+  console.log('API RESONSE BEFORE JSON:', response);
   return await response.json();
 };
 

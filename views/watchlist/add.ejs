@@ -6,12 +6,12 @@
     <p>Select the watchlists you want to add <%= stock.symbol %> to.</p>
      <form action="/watchlist/add/<%= stock._id %>" method="POST">
         <% watchlists.forEach(watchlist => { %>
-        <div>
+        <div class="checkboxes">
             <input type="checkbox" id="<%= watchlist.name %>" name="<%= watchlist.name %>" />
             <label for="<%= watchlist.name %>"><%= watchlist.name %></label>
         </div>
         <% }); %>
-        <button type="submit">Save</button>
+        <button type="submit" class="button is-light is-link">Save</button>
      </form>
 </body>
 </html>

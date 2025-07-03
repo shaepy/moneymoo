@@ -5,72 +5,107 @@
     <% if (!activePortfolio) { %>
     <a href="/">Home</a>
     <h1>My Portfolios</h1>
-    <a href="/portfolio/new">+ Create portfolio</a>
+    <a href="/portfolio/new" class="button is-light is-link">+ Create portfolio</a>
     <% } %>
 
     <% if (portfolios) { %>
     <h2>Overview</h2>
-        <h2>$<%= portfoliosSumValue.toFixed(2) %></h2>
-        <% portfolios.forEach(p => { %>
-          <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
-        <% }); %>
+    <h2>$<%= portfoliosSumValue.toFixed(2) %></h2>
+    <% portfolios.forEach(p => { %>
+        <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
+    <% }); %>
+    <% } %>
+
+    <% if (userStocks) { %>
+    <h2>All Positions</h2>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Asset</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Mkt Value</th>
+            <th>Cost Basis</th>
+            <th>Cost/Share</th>
+            <th>Gain/Loss $</th>
+            <th>Gain/Loss %</th>
+        </tr>
+    </thead>
+    <tbody>
+    <% userStocks.forEach((userStock) => { %>
+        <tr>
+            <td>
+                <img src="<%= userStock.stock.image %>" alt="logo for <%= userStock.stock.companyName %>" />
+                <a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a>
+            </td>
+            <td><%= userStock.quantity %></td>
+            <td>$<%= (userStock.stock.price).toFixed(2) %></td>
+            <td>$<%= userStock.marketValue %></td>
+            <td>$<%= (userStock.totalCost).toFixed(2) %></td>
+            <td>$<%= (userStock.costBasis).toFixed(2) %></td>
+            <td><%= userStock.unrealizedPL %></td>
+            <td><%= userStock.unrealizedPLPercent %></td>
+        </tr>
+    <% }) %>
+    </tbody>
+    </table>
     <% } %>
 
     <% if (activePortfolio) { %>
-        <p><a href="/portfolio">Back to Overview</a></p>
-        <% if (activePortfolio.edit) { %>
-            <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST">
-                <input type="text" name="name" value="<%= activePortfolio.name %>" />
-                <button type="submit">update</button>
-            </form>
-        <% } else { %>
-            <h1><%= activePortfolio.name %></h1>
-        <% } %>
-        <div>
-            <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a>
-            <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
-        </div>
-        <h3>Total Portfolio Value</h3>
-        <h2>$<%= (activePortfolio.totalValue).toFixed(2) %></h2>
-        <p><a href="/portfolio/<%= activePortfolio._id %>/trades">View Trades</a></p>
-        <h3>Positions</h3>
+    <p><a href="/portfolio">Back to Overview</a></p>
+    <% if (activePortfolio.edit) { %>
+        <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST">
+            <input type="text" name="name" value="<%= activePortfolio.name %>" class="input is-normal" />
+            <button type="submit" class="button is-light is-link">update</button>
+        </form>
+    <% } else { %>
+        <h1><%= activePortfolio.name %></h1>
+    <% } %>
+    <div>
+        <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a>
+        <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
+    </div>
+    <h3>Total Portfolio Value</h3>
+    <h2>$<%= (activePortfolio.totalValue).toFixed(2) %></h2>
+    <p><a href="/portfolio/<%= activePortfolio._id %>/trades">View Trades</a></p>
+    <h3>Positions</h3>
 
-        <!-- TODO-ST: Add a Portfolio Total Row for sums -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Asset</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Mkt Value</th>
-                    <th>Cost Basis</th>
-                    <th>Cost/Share</th>
-                    <th>Gain/Loss $</th>
-                    <th>Gain/Loss %</th>
-                </tr>
-            </thead>
-            <tbody>
-            <% activePortfolio.userStocks.forEach((userStock) => { %>
-                <tr>
-                    <td>
-                        <img src="<%= userStock.stock.image %>" alt="logo for <%= userStock.stock.companyName %>" />
-                        <a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a>
-                    </td>
-                    <td><%= userStock.quantity %></td>
-                    <td>$<%= (userStock.stock.price).toFixed(2) %></td>
-                    <td>$<%= userStock.marketValue %></td>
-                    <td>$<%= (userStock.totalCost).toFixed(2) %></td>
-                    <td>$<%= (userStock.costBasis).toFixed(2) %></td>
-                    <td><%= userStock.unrealizedPL %></td>
-                    <td><%= userStock.unrealizedPLPercent %></td>
-                    <% if (activePortfolio.edit) {%>
-                    <td><a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>">remove stock</a></td>
-                    <% } %>
-                </tr>
-            <% }) %>
-            </tbody>
-        </table>
-        <p><a href="/portfolio/<%= activePortfolio._id %>/trades/new">+ Add Trade</a></p>
+    <!-- TODO-ST: Add a Portfolio Total Row for sums -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Mkt Value</th>
+                <th>Cost Basis</th>
+                <th>Cost/Share</th>
+                <th>Gain/Loss $</th>
+                <th>Gain/Loss %</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% activePortfolio.userStocks.forEach((userStock) => { %>
+            <tr>
+                <td>
+                    <img src="<%= userStock.stock.image %>" alt="logo for <%= userStock.stock.companyName %>" />
+                    <a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a>
+                </td>
+                <td><%= userStock.quantity %></td>
+                <td>$<%= (userStock.stock.price).toFixed(2) %></td>
+                <td>$<%= userStock.marketValue %></td>
+                <td>$<%= (userStock.totalCost).toFixed(2) %></td>
+                <td>$<%= (userStock.costBasis).toFixed(2) %></td>
+                <td><%= userStock.unrealizedPL %></td>
+                <td><%= userStock.unrealizedPLPercent %></td>
+                <% if (activePortfolio.edit) {%>
+                <td><a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-light is-danger">remove stock</a></td>
+                <% } %>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <p><a href="/portfolio/<%= activePortfolio._id %>/trades/new" class="button is-light is-link">+ Add Trade</a></p>
     <% } %>
 </body>
 </html>

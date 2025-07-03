@@ -11,27 +11,32 @@ const utils = require("../utils/serverUtils.js");
 
 router.get("/", isSignedIn, async (req, res) => {
   const portfolioId = req.query.id;
-  const portfolios = await Portfolio.find({ userId: req.session.user._id});
+  const portfolios = await Portfolio.find({ userId: req.session.user._id}).populate("userStocks.stock");
 
   if (portfolioId) {
     const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
-    portfolio.userStocks.forEach((userStock) => {
-      userStock.marketValue = (
-        userStock.stock.price * userStock.quantity
-      ).toFixed(2);
-      userStock.unrealizedPL = (
-        userStock.stock.price * userStock.quantity - userStock.totalCost
-      ).toFixed(2);
-      userStock.unrealizedPLPercent = (
-        ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
-      ).toFixed(2);
-    });
+    utils.calculateMktValueAndPL(portfolio.userStocks);
     if (req.query.edit) portfolio.edit = true;
     return res.render("portfolio/index", {
       portfolios: null,
       activePortfolio: portfolio,
+      userStocks: null,
     });
   }
+  const stockLists = portfolios.filter(list => list.userStocks.length > 0).map(list => list.userStocks).flat();
+  console.log('CONSOLIDATED LISTS:', stockLists);
+  if (stockLists.length < 1 && stockLists) {
+    console.log('NO STOCKS FOUND');
+    return res.render('watchlist/index', {
+      portfolios: portfolios,
+      activePortfolio: null,
+      userStocks: null,
+    });
+  }
+  const userStocks = [...new Set(stockLists)];
+  console.log('USERSTOCKS IS:', userStocks);
+  utils.calculateMktValueAndPL(userStocks);
+
   if (portfolios.length > 0) {
     const portfoliosSumValue = portfolios.reduce((total, portfolio) => {
       return total + portfolio.totalValue;
@@ -40,11 +45,13 @@ router.get("/", isSignedIn, async (req, res) => {
       portfolios: portfolios,
       activePortfolio: null,
       portfoliosSumValue,
+      userStocks: userStocks,
     });
   } else {
     res.render("portfolio/index", {
       portfolios: null,
       activePortfolio: null,
+      userStocks: null,
     });
   }
 });

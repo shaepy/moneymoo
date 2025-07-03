@@ -4,15 +4,28 @@
 <body>
   <% if (user) { %>
     <h1>Welcome back, <%= user.username %></h1>
-    <a href="/portfolio">Portfolio</a>
-    <a href="/watchlist">Watchlist</a>
-    <a href="/search">Search</a>
-    <a href="/auth/sign-out">Log Out</a>
+
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <!-- navbar items, navbar burger... -->
+      <div class="navbar-item">moneymoo</div>
+      <a href="/portfolio" class="navbar-item">Portfolio</a>
+      <a href="/watchlist" class="navbar-item">Watchlist</a>
+      <a href="/search" class="navbar-item">Search</a>
+      <a href="/auth/sign-out" class="navbar-item">Log Out</a>
+    </div>
+    <div class="navbar-menu">
+      <!-- navbar start, navbar end -->
+    </div>
+    </nav>
+
   <% } else { %>
     <h1>Welcome to moneymoo</h1>
     <p>let's start milking your gains</p>
-    <a href="/auth/sign-up"><span>Sign Up</span></a>
-    <a href="/auth/sign-in"><span>Log In</span></a>
+    <a href="/auth/sign-up" class="button is-light is-link">Sign Up</a>
+    <a href="/auth/sign-in" class="button is-light is-link">Log In</a>
   <% } %>
 </body>
 </html>

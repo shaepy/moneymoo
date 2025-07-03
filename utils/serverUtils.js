@@ -57,6 +57,20 @@ const calculateNewTotals = (currentTotalCost, currentTotalNumOfShares, trade) =>
   return { newTotalCost, newTotalQuantity, newAvgCostBasis };
 };
 
+const calculateMktValueAndPL = async (userStocksArray) => {
+  userStocksArray.forEach((userStock) => {
+    userStock.marketValue = (
+      userStock.stock.price * userStock.quantity
+    ).toFixed(2);
+    userStock.unrealizedPL = (
+      userStock.stock.price * userStock.quantity - userStock.totalCost
+    ).toFixed(2);
+    userStock.unrealizedPLPercent = (
+      ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
+    ).toFixed(2);
+  });
+};
+
 const handleTradeType = async (portfolio, trades, trade, stock) => {
   const userStock = portfolio.userStocks.find((userSt) => {
     return userSt.stock._id.toString() === stock._id.toString();
@@ -88,4 +102,5 @@ module.exports = {
     handleTradeType,
     fetchStockProfileFromAPI,
     fetchFinancialsFromAPI,
+    calculateMktValueAndPL,
 };

@@ -4,10 +4,10 @@
 <body>
     <a href="/">Home</a>
     <h1><%= stock.symbol %></h1>
-    <h1>$<%= stock.price %></h1>
+    <h1>$<%= (stock.price).toFixed(2) %></h1>
     <h2><%= stock.companyName %></h2>
 
-    <a href="/watchlist/add?symbol=<%= stock.symbol %>">+ Add to Watchlist</a>
+    <a href="/watchlist/add?symbol=<%= stock.symbol %>" class="button is-light is-link">+ Add to Watchlist</a>
 
     <h3>Stock Details</h3>
     <p>Market Cap: <%= stock.marketCap %></p>
@@ -18,7 +18,7 @@
 
     <h3>Company Profile</h3>
     <img src="<%= stock.image %>" alt="logo for <%= stock.symbol %>"/>
-    <%- stock.website ? `<p>Website: <a href="${stock.website}">${stock.website}</a></p>` : null %>
+    <%- stock.website ? `<p><a href="${stock.website}">Website</a></p>` : null %>
     <p><%= stock.description %></p>
     <p>Exchange: <%= stock.exchange %></p>
     <p>Country: <%= stock.country %></p>

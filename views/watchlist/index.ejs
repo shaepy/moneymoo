@@ -5,7 +5,7 @@
     <a href="/">Home</a>
     <% if (!activeWatchlist) { %>
     <h1>Watchlist</h1>
-    <a href="/watchlist/new">+ Create watchlist</a>
+    <a href="/watchlist/new" class="button is-light is-link">+ Create watchlist</a>
     <% } %>
 
     <% if (watchlists) { %>
@@ -18,7 +18,11 @@
     <% if (activeWatchlist) { %>
     <p><a href="/watchlist">Back to Watchlists</a></p>
     <h1><%= activeWatchlist.name %></h1>
-    <table>
+    <div>
+        <a href="/watchlist?id=<%= activeWatchlist._id %>&edit=true">edit</a>
+        <a href="/watchlist/<%= activeWatchlist._id %>/remove">remove</a>
+    </div>
+    <table class="table">
         <thead>
             <tr>
                 <th>Symbol</th>
@@ -41,7 +45,7 @@
     <% } %>
 
     <% if (stocks) { %>
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Symbol</th>
@@ -54,13 +58,17 @@
         <% stocks.forEach((stock) => { %>
             <tr>
                 <td><a href="/stock/<%= stock.symbol %>"><%= stock.symbol %></a></td>
-                <td><%= stock.price %></td>
+                <td><%= (stock.price).toFixed(2) %></td>
                 <td><%= (stock.change).toFixed(2) %></td>
                 <td><%= (stock.changePercentage).toFixed(2) %></td>
             </tr>
         <% }) %>
         </tbody>
     </table>
+    <% } %>
+
+    <% if (!stocks && !activeWatchlist) { %>
+    <p><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
     <% } %>
 </body>
 </html>
