@@ -3,13 +3,15 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-3">Search</h1>
+    <div class="ml-6 mr-6">
+    <h1 class="is-size-3 mb-4 mt-4">Search</h1>
     <form action="/search" method="POST" class="box">
         <div class="field">
             <label for="symbol" class="label">Stock Symbol</label>
             <input type="text" name="symbol" id="symbol" class="input is-normal" required placeholder="GOOG"/>
         </div>
-        <button type="submit" class="button is-link">Find Stock</button>
+        <button type="submit" class="button is-link mt-2">Find Stock</button>
     </form>
+    </div>
 </body>
 </html>

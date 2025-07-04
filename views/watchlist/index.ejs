@@ -4,69 +4,71 @@
 <body>
     <%- include('../partials/_navbar') %>
     <% if (!activeWatchlist) { %>
-    <h1 class="is-size-3">Watchlist</h1>
-    <a href="/watchlist/new" class="button is-link">+ Create watchlist</a>
+    <h1 class="is-size-3 ml-5 mr-5 mt-2 mb-2">Watchlists</h1>
+    <a href="/watchlist/new" class="button is-link ml-5 mr-5 mt-1 mb-1">+ Create watchlist</a>
     <% } %>
 
     <% if (watchlists) { %>
-    <h2 class="is-size-4">Overview</h2>
-    <% watchlists.forEach(list => { %>
-        <p><a href="/watchlist?id=<%= list._id %>"><%= list.name %></a></p>
-    <% }); %>
+    <div class="ml-5 mr-5 mt-3 mb-4">
+        <h2 class="is-size-4 mb-2">Overview</h2>
+        <% watchlists.forEach(list => { %>
+            <p class="button is-link is-outlined is-small"><a href="/watchlist?id=<%= list._id %>"><%= list.name %></a></p>
+        <% }); %>
+    </div>
     <% } %>
 
     <% if (activeWatchlist) { %>
-    <p><a href="/watchlist">Back to Watchlists</a></p>
+    <p class="ml-5 mr-5 mt-3 mb-3"><a href="/watchlist">Back to Watchlists</a></p>
     <% if (activeWatchlist.edit) { %>
-        <form action="/watchlist/<%= activeWatchlist._id %>?_method=PUT" method="POST">
+        <form action="/watchlist/<%= activeWatchlist._id %>?_method=PUT" method="POST" class="ml-5 mr-5 mt-2 mb-2">
             <input type="text" name="name" value="<%= activeWatchlist.name %>" class="input is-normal" />
-            <button type="submit" class="button is-link">update</button>
+            <button type="submit" class="button is-link mt-3">update</button>
         </form>
     <% } else { %>
-        <h1 class="is-size-3"><%= activeWatchlist.name %></h1>
+        <h1 class="is-size-3 mt-2 mb-1 ml-5 mr-4"><%= activeWatchlist.name %></h1>
     <% } %>
-    <div>
-        <a href="/watchlist?id=<%= activeWatchlist._id %>&edit=true">edit</a>
+    <div class="mb-2 ml-5 mr-4">
+        <a href="/watchlist?id=<%= activeWatchlist._id %>&edit=true">edit</a> |
         <a href="/watchlist/<%= activeWatchlist._id %>/remove">remove</a>
     </div>
-    <section class="section">
+    <section class="m-5">
         <table class="table is-hoverable is-fullwidth">
-        <thead>
-            <tr>
-                <th>Symbol</th>
-                <th>Price</th>
-                <th>Day Change</th>
-                <th>Day Change %</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% activeWatchlist.stocks.forEach((stock) => { %>
-            <tr>
-                <td>
-                    <div class="symbol-and-image">
-                        <img src="<%= stock.image %>" alt="logo for <%= stock.companyName %>" class="image is-16x16"/>
-                        <a href="/stock/<%= stock.symbol %>"><%= stock.symbol %></a>
-                    </div>
-                </td>
-                <td><%= stock.price %></td>
-                <td><%= (stock.change).toFixed(2) %></td>
-                <td><%= (stock.changePercentage).toFixed(2) %></td>
-                <% if (activeWatchlist.edit) {%>
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>Day Change</th>
+                    <th>Day Change %</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% activeWatchlist.stocks.forEach((stock) => { %>
+                <tr>
                     <td>
-                    <form action="/watchlist/<%= activeWatchlist._id %>/remove?id=<%= stock._id %>&_method=PUT" method="POST">
-                        <button class="delete" type="submit"></button>
-                    </form>
+                        <div class="symbol-and-image">
+                            <img src="<%= stock.image %>" alt="logo for <%= stock.companyName %>" class="image is-16x16"/>
+                            <a href="/stock/<%= stock.symbol %>"><%= stock.symbol %></a>
+                        </div>
                     </td>
-                <% } %>
-            </tr>
-        <% }) %>
-        </tbody>
-    </table>
+                    <td><%= stock.price %></td>
+                    <td><%= (stock.change).toFixed(2) %></td>
+                    <td><%= (stock.changePercentage).toFixed(2) %></td>
+                    <% if (activeWatchlist.edit) {%>
+                        <td>
+                        <form action="/watchlist/<%= activeWatchlist._id %>/remove?id=<%= stock._id %>&_method=PUT" method="POST">
+                            <button class="delete" type="submit"></button>
+                        </form>
+                        </td>
+                    <% } %>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
     </section>
     <% } %>
 
     <% if (stocks) { %>
-    <section class="section">
+    <section class="m-5">
         <table class="table is-hoverable is-fullwidth">
             <thead>
                 <tr>
@@ -96,7 +98,7 @@
     <% } %>
 
     <% if (!stocks && !activeWatchlist) { %>
-    <p><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
+    <p class="ml-5 mr-5 mt-4"><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
     <% } %>
 </body>
 </html>

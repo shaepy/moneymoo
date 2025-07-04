@@ -8,7 +8,7 @@
 
 body {
     background-color: rgb(251, 251, 251);
-    padding: 10px;
+    /* padding: 15px; */
 }
 
 td input[type="text"] {
@@ -21,4 +21,8 @@ td input[type="text"] {
     flex-wrap: wrap;
     gap: 7px;
     align-items: center;
+}
+
+nav.navbar {
+    border-bottom: 1px solid rgb(233, 233, 233);
 }

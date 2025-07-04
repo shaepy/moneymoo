@@ -3,11 +3,11 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-3">Log In</h1>
+    <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4">Log In</h1>
     <% if (loginError) { %>
     <p>Login failed. Please try again.</p>
     <% } %>
-    <form action="/auth/sign-in" method="POST" class="box">
+    <form action="/auth/sign-in" method="POST" class="box ml-6 mr-6">
     <div class=field>
         <label for="username" class="label">Username or Email</label>
         <input type="text" id="username" name="username" required class="input is-normal" />

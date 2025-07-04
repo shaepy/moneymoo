@@ -3,102 +3,122 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-4"><%= stock.symbol %> • <%= stock.exchange %></h1>
-    <h2 class="is-size-3"><%= stock.companyName %></h2>
-    <h2 class="is-size-2">$<%= (stock.price).toFixed(2) %></h2>
+    <div class="ml-6 mr-6">
+        <div class="mt-4 mb-3">
+            <h1 class="is-size-4"><%= stock.symbol %> • <%= stock.exchange %></h1>
+            <h2 class="is-size-3"><%= stock.companyName %></h2>
+            <h2 class="is-size-2">$<%= (stock.price).toFixed(2) %></h2>
+        </div>
 
-    <a href="/watchlist/add?symbol=<%= stock.symbol %>" class="button is-link">+ Add to Watchlist</a>
+        <p><a href="/watchlist/add?symbol=<%= stock.symbol %>" class="button is-link">+ Add to Watchlist</a></p>
 
-    <div class="content">
-        <h3>Stock Details</h3>
-        <table class="table">
-            <tbody>
-                <tr>
-                    <td>Market Cap</td>
-                    <td><%= stock.marketCap %></td>
-                </tr>
-                <tr>
-                    <td>Day Change</td>
-                    <td><%= stock.change %> (<%= (stock.changePercentage).toFixed(2) %>%)</td>
-                </tr>
-                <tr>
-                    <td>Volume</td>
-                    <td><%= stock.volume %></td>
-                </tr>
-                <tr>
-                    <td>Avg Volume</td>
-                    <td><%= stock.averageVolume %></td>
-                </tr>
-                <tr>
-                    <td>Price Range</td>
-                    <td><%= stock.range %></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="content mt-5 box container">
+            <h3>Stock Details</h3>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Market Cap</td>
+                        <td><%= stock.marketCap %></td>
+                    </tr>
+                    <tr>
+                        <td>Day Change</td>
+                        <td><%= stock.change %> (<%= (stock.changePercentage).toFixed(2) %>%)</td>
+                    </tr>
+                    <tr>
+                        <td>Volume</td>
+                        <td><%= stock.volume %></td>
+                    </tr>
+                    <tr>
+                        <td>Avg Volume</td>
+                        <td><%= stock.averageVolume %></td>
+                    </tr>
+                    <tr>
+                        <td>Price Range</td>
+                        <td><%= stock.range %></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content box container">
+            <h3>Company Profile</h3>
+            <img src="<%= stock.image %>" alt="logo for <%= stock.symbol %>" class="image is-64x64"/>
+            <%- stock.website ? `<p class="button is-link is-small is-outlined"><a href="${stock.website}">Website</a></p>` : null %>
+            <h4>About</h4>
+            <%- stock.isEtf ? '<p>* Exchange-Traded Fund</p>' : null %>
+            <%- stock.isFund ? '<p>* Index Fund</p>' : null %>
+            <p><%= stock.description %></p>
+            <div class="columns">
+                <div class="column">
+                    <h4>Country</h4>
+                    <p><%= stock.country %></p>
+                </div>
+                <div class="column">
+                    <h4>Sector</h4>
+                    <p><%= stock.sector %></p>
+                </div>
+                <div class="column">
+                    <h4>Industry</h4>
+                     <p><%= stock.industry %></p>
+                </div>
+                <div class="column">
+                    <h4>Exchange</h4>
+                     <p><%= stock.exchange %></p>
+                </div>
+            </div>
+        </div>
+
+        <% if (financials) { %>
+        <div class="box content container">
+            <h3 class="is-size-4 title">Financial Overview</h3>
+            <%- financials['52WeekHigh'] && `<p>52 Week High: ${financials['52WeekHigh']}</p>` %>
+            <%- financials['52WeekHighDate'] && `<p>52 Week High Date: ${financials['52WeekHighDate']}</p>` %>
+            <%- financials['52WeekLow'] && `<p>52 Week Low: ${financials['52WeekLow']}</p>` %>
+            <%- financials['52WeekLowDate'] && `<p>52 Week Low Date: ${financials['52WeekLowDate']}</p>` %>
+            <%- financials['10DayAverageTradingVolume'] && `<p>10Day Avg Trading Volume: ${financials['10DayAverageTradingVolume']}</p>` %>
+            <%- financials.yearToDatePriceReturnDaily && `<p>YTD Price Return Daily: ${financials.yearToDatePriceReturnDaily}</p>` %>
+            <%- financials.monthToDatePriceReturnDaily && `<p>MTD Price Return Daily: ${financials.monthToDatePriceReturnDaily}</p>` %>
+
+            <% if (financials.currentRatioAnnual || financials.currentRatioQuarterly || financials.peTTM) { %>
+            <h3 class="is-size-5 title">Price-to-Earnings</h3>
+            <% } %>
+            <%- financials.currentRatioAnnual && `<p>Annual Ratio: ${financials.currentRatioAnnual}</p>` %>
+            <%- financials.currentRatioQuarterly && `<p>Quarterly Ratio: ${financials.currentRatioQuarterly}</p>` %>
+            <%- financials.peTTM && `<p>TTM: ${financials.peTTM}</p>` %>
+
+            <% if (financials.epsAnnual) { %>
+            <h3 class="is-size-5 title">Earnings Per Share</h3>
+            <% } %>
+            <%- financials.epsAnnual && `<p>Annual: ${financials.epsAnnual}</p>` %>
+            <%- financials.epsGrowth3Y && `<p>3Y Growth: ${financials.epsGrowth3Y}</p>` %>
+            <%- financials.epsGrowth5Y && `<p>5Y Growth: ${financials.epsGrowth5Y}</p>` %>
+            <%- financials.epsGrowthQuarterlyYoy && `<p>Quarterly YOY Growth: ${financials.epsGrowthQuarterlyYoy}</p>` %>
+
+            <% if (financials.pb) { %>
+            <h3 class="is-size-5 title">Price-to-Book</h3>
+            <% } %>
+            <%- financials.pb && `<p>Ratio: ${financials.pb}</p>` %>
+            <%- financials.pbAnnual && `<p>Annual Ratio: ${financials.pbAnnual}</p>` %>
+            <%- financials.pbQuarterly && `<p>Quarterly Ratio: ${financials.pbQuarterly}</p>` %>
+
+            <% if (financials.revenuePerShareAnnual || financials.revenuePerShareTTM) { %>
+            <h3 class="is-size-5 title">Revenue</h3>
+            <% } %>
+            <%- financials.revenueGrowth3Y && `<p>3Y Growth: ${financials.revenueGrowth3Y}</p>` %>
+            <%- financials.revenueGrowth5Y && `<p>5Y Growth: ${financials.revenueGrowth5Y}</p>` %>
+            <%- financials.revenueGrowthQuarterlyYoy && `<p>Quarterly YOY: ${financials.revenueGrowthQuarterlyYoy}</p>` %>
+            <%- financials.revenuePerShareAnnual && `<p>Annual Per Share: ${financials.revenuePerShareAnnual}</p>` %>
+            <%- financials.revenuePerShareTTM && `<p>TTM Per Share: ${financials.revenuePerShareTTM}</p>` %>
+            <%- financials.revenueShareGrowth5Y && `<p>5Y Share Growth: ${financials.revenueShareGrowth5Y}</p>` %>
+        
+            <% if (financials.cashFlowPerShareTTM || financials.cashFlowPerShareQuarterly || financials.cashFlowPerShareAnnual) { %>
+            <h3 class="is-size-5 title">Cash Flow</h3>
+            <% } %>
+            <%- financials.cashFlowPerShareTTM && `<p>TTM Per Share: ${financials.cashFlowPerShareTTM}</p>` %>
+            <%- financials.cashFlowPerShareAnnual && `<p>Annual Per Share: ${financials.cashFlowPerShareAnnual}</p>` %>
+            <%- financials.cashFlowPerShareQuarterly && `<p>Quarterly Per Share: ${financials.cashFlowPerShareQuarterly}</p>` %>
+        </div>
+        <% } %>
     </div>
-
-    <div class="content">
-    <h3>Company Profile</h3>
-    <img src="<%= stock.image %>" alt="logo for <%= stock.symbol %>" class="image is-64x64"/>
-    <%- stock.website ? `<p><a href="${stock.website}">Website</a></p>` : null %>
-    <h4>About</h4>
-    <p><%= stock.description %></p>
-    <p>Country: <%= stock.country %></p>
-    <p>Sector: <%= stock.sector %></p>
-    <p>Industry: <%= stock.industry %></p>
-    <%- stock.ceo ? `<p>CEO: ${stock.ceo}</p>` : null %>
-    <%- stock.isEtf ? '<p>* Exchange-Traded Fund</p>' : null %>
-    <%- stock.isFund ? '<p>* Index Fund</p>' : null %>
-    </div>
-
-    <% if (financials) { %>
-    <h3 class="is-size-4 title">Financial Overview</h3>
-    <%- financials['52WeekHigh'] && `<p>52 Week High: ${financials['52WeekHigh']}</p>` %>
-    <%- financials['52WeekHighDate'] && `<p>52 Week High Date: ${financials['52WeekHighDate']}</p>` %>
-    <%- financials['52WeekLow'] && `<p>52 Week Low: ${financials['52WeekLow']}</p>` %>
-    <%- financials['52WeekLowDate'] && `<p>52 Week Low Date: ${financials['52WeekLowDate']}</p>` %>
-    <%- financials['10DayAverageTradingVolume'] && `<p>10Day Avg Trading Volume: ${financials['10DayAverageTradingVolume']}</p>` %>
-    <%- financials.yearToDatePriceReturnDaily && `<p>YTD Price Return Daily: ${financials.yearToDatePriceReturnDaily}</p>` %>
-    <%- financials.monthToDatePriceReturnDaily && `<p>MTD Price Return Daily: ${financials.monthToDatePriceReturnDaily}</p>` %>
-
-    <% if (financials.currentRatioAnnual || financials.currentRatioQuarterly || financials.peTTM) { %>
-    <h3 class="is-size-5 title">Price-to-Earnings</h3>
-    <% } %>
-    <%- financials.currentRatioAnnual && `<p>Annual Ratio: ${financials.currentRatioAnnual}</p>` %>
-    <%- financials.currentRatioQuarterly && `<p>Quarterly Ratio: ${financials.currentRatioQuarterly}</p>` %>
-    <%- financials.peTTM && `<p>TTM: ${financials.peTTM}</p>` %>
-
-    <% if (financials.epsAnnual) { %>
-    <h3 class="is-size-5 title">Earnings Per Share</h3>
-    <% } %>
-    <%- financials.epsAnnual && `<p>Annual: ${financials.epsAnnual}</p>` %>
-    <%- financials.epsGrowth3Y && `<p>3Y Growth: ${financials.epsGrowth3Y}</p>` %>
-    <%- financials.epsGrowth5Y && `<p>5Y Growth: ${financials.epsGrowth5Y}</p>` %>
-    <%- financials.epsGrowthQuarterlyYoy && `<p>Quarterly YOY Growth: ${financials.epsGrowthQuarterlyYoy}</p>` %>
-
-    <% if (financials.pb) { %>
-    <h3 class="is-size-5 title">Price-to-Book</h3>
-    <% } %>
-    <%- financials.pb && `<p>Ratio: ${financials.pb}</p>` %>
-    <%- financials.pbAnnual && `<p>Annual Ratio: ${financials.pbAnnual}</p>` %>
-    <%- financials.pbQuarterly && `<p>Quarterly Ratio: ${financials.pbQuarterly}</p>` %>
-
-    <% if (financials.revenuePerShareAnnual || financials.revenuePerShareTTM) { %>
-    <h3 class="is-size-5 title">Revenue</h3>
-    <% } %>
-    <%- financials.revenueGrowth3Y && `<p>3Y Growth: ${financials.revenueGrowth3Y}</p>` %>
-    <%- financials.revenueGrowth5Y && `<p>5Y Growth: ${financials.revenueGrowth5Y}</p>` %>
-    <%- financials.revenueGrowthQuarterlyYoy && `<p>Quarterly YOY: ${financials.revenueGrowthQuarterlyYoy}</p>` %>
-    <%- financials.revenuePerShareAnnual && `<p>Annual Per Share: ${financials.revenuePerShareAnnual}</p>` %>
-    <%- financials.revenuePerShareTTM && `<p>TTM Per Share: ${financials.revenuePerShareTTM}</p>` %>
-    <%- financials.revenueShareGrowth5Y && `<p>5Y Share Growth: ${financials.revenueShareGrowth5Y}</p>` %>
-   
-    <% if (financials.cashFlowPerShareTTM || financials.cashFlowPerShareQuarterly || financials.cashFlowPerShareAnnual) { %>
-    <h3 class="is-size-5 title">Cash Flow</h3>
-    <% } %>
-    <%- financials.cashFlowPerShareTTM && `<p>TTM Per Share: ${financials.cashFlowPerShareTTM}</p>` %>
-    <%- financials.cashFlowPerShareAnnual && `<p>Annual Per Share: ${financials.cashFlowPerShareAnnual}</p>` %>
-    <%- financials.cashFlowPerShareQuarterly && `<p>Quarterly Per Share: ${financials.cashFlowPerShareQuarterly}</p>` %>
-    <% } %>
 </body>
 </html>

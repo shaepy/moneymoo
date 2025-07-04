@@ -18,25 +18,30 @@ router.get("/", isSignedIn, async (req, res) => {
     utils.calculateMktValueAndPL(portfolio.userStocks);
     if (req.query.edit) portfolio.edit = true;
     return res.render("portfolio/index", {
-      portfolios: null,
+      portfolios: portfolios,
       activePortfolio: portfolio,
       userStocks: null,
     });
   }
   const stockLists = portfolios.filter(list => list.userStocks.length > 0).map(list => list.userStocks).flat();
   console.log('CONSOLIDATED LISTS:', stockLists);
-  if (stockLists.length < 1 && stockLists) {
+
+  // FIX: if no stocks are found, portfolio or not it will return here
+  if (stockLists.length < 1) {
     console.log('NO STOCKS FOUND');
-    return res.render('watchlist/index', {
+    return res.render('portfolio/index', {
       portfolios: portfolios,
       activePortfolio: null,
       userStocks: null,
+      portfoliosSumValue: null,
     });
   }
   const userStocks = [...new Set(stockLists)];
   console.log('USERSTOCKS IS:', userStocks);
   utils.calculateMktValueAndPL(userStocks);
-
+ 
+  // we are checking for stocks before we check for portfolios ?
+  // * if there are any portfolios
   if (portfolios.length > 0) {
     const portfoliosSumValue = portfolios.reduce((total, portfolio) => {
       return total + portfolio.totalValue;
@@ -47,11 +52,13 @@ router.get("/", isSignedIn, async (req, res) => {
       portfoliosSumValue,
       userStocks: userStocks,
     });
+    // else there aren't any? 
   } else {
     res.render("portfolio/index", {
       portfolios: null,
       activePortfolio: null,
       userStocks: null,
+      portfoliosSumValue: null,
     });
   }
 });

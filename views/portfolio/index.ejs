@@ -3,121 +3,151 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <% if (!activePortfolio) { %>
-    <h1 class="is-size-3">My Portfolios</h1>
-    <a href="/portfolio/new" class="button is-link">+ Create portfolio</a>
-    <% } %>
+    <div class="columns">
+        <div class="column is-one-fifth">
+            <% if (!activePortfolio) { %>
+            <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">My Portfolios</h1>
+            <a href="/portfolio/new" class="button is-link ml-5 mr-3 mt-1 mb-1">+ Create portfolio</a>
+            <% } %>
 
-    <% if (portfolios) { %>
-    <section>
-        <h2 class="is-size-4">Overview</h2>
-        <h2 class="is-size-3">$<%= portfoliosSumValue.toFixed(2) %></h2>
-        <% portfolios.forEach(p => { %>
-            <p><a href="/portfolio?id=<%= p._id %>"><%= p.name %></a> - $<%= (p.totalValue).toFixed(2) %></p>
-        <% }); %>
-    </section>
-    <% } %>
-
-    <% if (userStocks) { %>
-    <section class="section">
-        <h2 class="is-size-4">All Positions</h2>
-        <table class="table is-hoverable is-fullwidth">
-        <thead>
-            <tr>
-                <th>Asset</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Mkt Value</th>
-                <th>Cost Basis</th>
-                <th>Cost/Share</th>
-                <th>Gain/Loss $</th>
-                <th>Gain/Loss %</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% userStocks.forEach((userStock) => { %>
-            <tr>
-                <td><a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a></td>
-                <td><%= userStock.quantity %></td>
-                <td>$<%= (userStock.stock.price).toFixed(2) %></td>
-                <td>$<%= userStock.marketValue %></td>
-                <td>$<%= (userStock.totalCost).toFixed(2) %></td>
-                <td>$<%= (userStock.costBasis).toFixed(2) %></td>
-                <td><%= userStock.unrealizedPL %></td>
-                <td><%= userStock.unrealizedPLPercent %></td>
-            </tr>
-        <% }) %>
-        </tbody>
-        </table>
-    </section>
-    <% } %>
+            <% if (portfolios && !activePortfolio) { %>
+            <section class="ml-5 mr-3 mt-3 mb-4">
+                <div class="mb-3">
+                    <h2 class="is-size-4">Overview</h2>
+                    <%- portfoliosSumValue && `<h2 class="is-size-3">${portfoliosSumValue.toFixed(2)}</h2>` %>
+                </div>
+                <% portfolios.forEach(p => { %>
+                    <div class="mt-1 mb-1 is-flex is-flex-direction-column is-gap-0.5">
+                        <p><a href="/portfolio?id=<%= p._id %>" class="button is-link is-outlined is-small mt-1"><%= p.name %></a></p>
+                        <p class="is-size-7">$<%= (p.totalValue).toFixed(2) %></p>
+                    </div>
+                <% }); %>
+            </section>
+            <% } %>
+        </div>
+        <div class="column">
+            <% if (userStocks) { %>
+            <section class="ml-1 mr-6 mt-5 mb-5">
+                <h2 class="is-size-4 mb-4">All Positions</h2>
+                <table class="table is-hoverable is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Mkt Value</th>
+                        <th>Cost Basis</th>
+                        <th>Cost/Share</th>
+                        <th>Gain/Loss $</th>
+                        <th>Gain/Loss %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% userStocks.forEach((userStock) => { %>
+                    <tr>
+                        <td><a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a></td>
+                        <td><%= userStock.quantity %></td>
+                        <td>$<%= (userStock.stock.price).toFixed(2) %></td>
+                        <td>$<%= userStock.marketValue %></td>
+                        <td>$<%= (userStock.totalCost).toFixed(2) %></td>
+                        <td>$<%= (userStock.costBasis).toFixed(2) %></td>
+                        <td><%= userStock.unrealizedPL %></td>
+                        <td><%= userStock.unrealizedPLPercent %></td>
+                    </tr>
+                <% }) %>
+                </tbody>
+                </table>
+            </section>
+            <% } %>
+        </div>
+    </div>
 
     <% if (activePortfolio) { %>
-    <p><a href="/portfolio">Back to Overview</a></p>
-    <% if (activePortfolio.edit) { %>
-        <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST">
-            <input type="text" name="name" value="<%= activePortfolio.name %>" class="input is-normal" />
-            <button type="submit" class="button is-light is-link">update</button>
-        </form>
-    <% } else { %>
-        <h1 class="is-size-3"><%= activePortfolio.name %></h1>
-    <% } %>
-    <div>
-        <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a>
-        <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
+    <div class="columns">
+        <div class="column is-one-fifth">
+            <p class="ml-5 mr-5 mb-3"><a href="/portfolio">Back to Overview</a></p>
+            <% if (activePortfolio.edit) { %>
+                <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST" class="ml-5 mr-5 mt-2 mb-2">
+                    <input type="text" name="name" value="<%= activePortfolio.name %>" class="input is-normal" />
+                    <button type="submit" class="button is-link mt-2">update</button>
+                </form>
+            <% } else { %>
+                <h1 class="is-size-3 mt-2 mb-1 ml-5 mr-5"><%= activePortfolio.name %></h1>
+            <% } %>
+            <div class="mb-5 ml-5 mr-5">
+                <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a> |
+                <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
+            </div>
+            <section class="ml-5 mr-5 mt-3 mb-4">
+                <% portfolios.forEach(p => { %>
+                    <div class="mt-1 mb-1 is-flex is-flex-direction-column is-gap-0.5">
+                        <p><a href="/portfolio?id=<%= p._id %>" class="button is-link is-outlined is-small mt-1"><%= p.name %></a></p>
+                        <p class="is-size-7">$<%= (p.totalValue).toFixed(2) %></p>
+                    </div>
+                <% }); %>
+            </section>
+        </div>
+
+        <div class="column">
+            <div class="is-flex-direction-row is-flex is-gap-1 is-justify-content-left">
+                <h3 class="is-size-4">Portfolio Value</h3>
+                <h2 class="is-size-4">$<%= (activePortfolio.totalValue).toFixed(2) %></h2>
+            </div>
+            <section class="mr-6 mt-2 mb-4">
+                <h3 class="is-size-4 mb-4">Positions</h3>
+                <!-- TODO-ST: Add a Portfolio Total Row for sums -->
+                <table class="table is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Mkt Value</th>
+                            <th>Cost Basis</th>
+                            <th>Cost/Share</th>
+                            <th>Gain/Loss $</th>
+                            <th>Gain/Loss %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% activePortfolio.userStocks.forEach((userStock) => { %>
+                        <tr>
+                            <td><a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a></td>
+                            <td><%= userStock.quantity %></td>
+                            <td>$<%= (userStock.stock.price).toFixed(2) %></td>
+                            <td>$<%= userStock.marketValue %></td>
+                            <td>$<%= (userStock.totalCost).toFixed(2) %></td>
+                            <td>$<%= (userStock.costBasis).toFixed(2) %></td>
+                            <td><%= userStock.unrealizedPL %></td>
+                            <td><%= userStock.unrealizedPLPercent %></td>
+                            <% if (activePortfolio.edit) {%>
+                            <td><a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-light is-danger">remove</a></td>
+                            <% } %>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Summary</th>
+                            <th>[Qt]</th>
+                            <th>[Price]</th>
+                            <th>[MktValue]</th>
+                            <th>[CostBasis]</th>
+                            <th>[AvgCost]</th>
+                            <th>[GainLoss]$</th>
+                            <th>[GainLoss]%</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="is-flex is-flex-direction-row mt-4 mb-4 is-gap-2">
+                    <p class="button is-link is-outlined"><a href="/portfolio/<%= activePortfolio._id %>/trades">View Trades</a></p>
+                    <p><a href="/portfolio/<%= activePortfolio._id %>/trades/new" class="button is-link">+ Add Trade</a></p>
+                </div>
+            </section>
+        </div>
+
     </div>
-    <h3 class="is-size-5">Total Portfolio Value</h3>
-    <h2 class="is-size-4">$<%= (activePortfolio.totalValue).toFixed(2) %></h2>
-    <p><a href="/portfolio/<%= activePortfolio._id %>/trades">View Trades</a></p>
-    
-    <section class="section">
-        <h3 class="is-size-4">Positions</h3>
-        <!-- TODO-ST: Add a Portfolio Total Row for sums -->
-        <table class="table is-hoverable is-fullwidth">
-            <thead>
-                <tr>
-                    <th>Asset</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Mkt Value</th>
-                    <th>Cost Basis</th>
-                    <th>Cost/Share</th>
-                    <th>Gain/Loss $</th>
-                    <th>Gain/Loss %</th>
-                </tr>
-            </thead>
-            <tbody>
-            <% activePortfolio.userStocks.forEach((userStock) => { %>
-                <tr>
-                    <td><a href="/stock/<%= userStock.stock.symbol %>"><%= userStock.stock.symbol %></a></td>
-                    <td><%= userStock.quantity %></td>
-                    <td>$<%= (userStock.stock.price).toFixed(2) %></td>
-                    <td>$<%= userStock.marketValue %></td>
-                    <td>$<%= (userStock.totalCost).toFixed(2) %></td>
-                    <td>$<%= (userStock.costBasis).toFixed(2) %></td>
-                    <td><%= userStock.unrealizedPL %></td>
-                    <td><%= userStock.unrealizedPLPercent %></td>
-                    <% if (activePortfolio.edit) {%>
-                    <td><a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-danger">remove</a></td>
-                    <% } %>
-                </tr>
-            <% }) %>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Summary</th>
-                    <th>[Qt]</th>
-                    <th>[Price]</th>
-                    <th>[MktValue]</th>
-                    <th>[CostBasis]</th>
-                    <th>[AvgCost]</th>
-                    <th>[GainLoss]$</th>
-                    <th>[GainLoss]%</th>
-                </tr>
-            </tfoot>
-        </table>
-        <p><a href="/portfolio/<%= activePortfolio._id %>/trades/new" class="button is-link">+ Add Trade</a></p>
-    </section>
+
     <% } %>
 </body>
 </html>

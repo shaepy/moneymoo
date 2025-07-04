@@ -3,14 +3,14 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-        <h1 class="is-size-3">Sign Up</h1>
+        <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4">Sign Up</h1>
         <% if (userExists) { %>
         <p><a href="/auth/sign-in">Log In</a> to your account</p>
         <% } %>
         <% if (passwordsDontMatch) { %>
             <p>Passwords do not match.</p>
         <% } %>
-        <form action="/auth/sign-up" method="POST" class="box">
+        <form action="/auth/sign-up" method="POST" class="box ml-6 mr-6">
             <div class="field">
                 <label for="username" class="label">Username</label>
                 <input type="text" id="username" name="username" required class="input is-normal"/>

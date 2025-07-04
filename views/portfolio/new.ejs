@@ -3,13 +3,18 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-3">Create Portfolio</h1>
-    <form action="/portfolio" method="POST" class="box">
-        <div class="field">
-            <label for="name" class="label">Portfolio Name</label>
-            <input type="text" id="name" name="name" placeholder="Enter portfolio name" required class="input is-normal"/>
+    <div class="ml-5 mr-5">
+        <p class="mt-3 mb-3"><a href="/portfolio">Back to Portfolios</a></p>
+        <div class="ml-6 mr-6">
+            <h1 class="is-size-3 mb-4">Create Portfolio</h1>
+            <form action="/portfolio" method="POST" class="box">
+                <div class="field">
+                    <label for="name" class="label">Portfolio Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter portfolio name" required class="input is-normal"/>
+                </div>
+                <button type="submit" class="button is-link mt-2">Create Portfolio</button>
+        </form>
         </div>
-        <button type="submit" class="button is-link">Create Portfolio</button>
-    </form>
+    </div>
 </body>
 </html>
