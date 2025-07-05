@@ -18,12 +18,10 @@ const userSchema = new mongoose.Schema({
     watchlists: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Watchlist",
-        unique: true,
     }],
     portfolios: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Portfolio",
-        unique: true,
     }],
 });
 

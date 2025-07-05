@@ -8,7 +8,7 @@
 
 body {
     background-color: rgb(251, 251, 251);
-    /* padding: 15px; */
+    height: 100vh;
 }
 
 td input[type="text"] {
@@ -25,4 +25,8 @@ td input[type="text"] {
 
 nav.navbar {
     border-bottom: 1px solid rgb(233, 233, 233);
+}
+
+div.button.is-link.is-outlined {
+    max-width: 200px;
 }

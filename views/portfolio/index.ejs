@@ -7,21 +7,25 @@
         <div class="column is-one-fifth">
             <% if (!activePortfolio) { %>
             <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">My Portfolios</h1>
-            <a href="/portfolio/new" class="button is-link ml-5 mr-3 mt-1 mb-1">+ Create portfolio</a>
+            <a href="/portfolio/new" class="button is-link ml-5 mr-3 mt-1 mb-1">+ Create Portfolio</a>
             <% } %>
 
             <% if (portfolios && !activePortfolio) { %>
             <section class="ml-5 mr-3 mt-3 mb-4">
                 <div class="mb-3">
-                    <h2 class="is-size-4">Overview</h2>
-                    <%- portfoliosSumValue && `<h2 class="is-size-3">${portfoliosSumValue.toFixed(2)}</h2>` %>
+                    <%- portfoliosSumValue && `<h2 class="is-size-4">Overview</h2>` %>
+                    <%- portfoliosSumValue && `<h2 class="is-size-3">$${portfoliosSumValue.toFixed(2)}</h2>` %>
                 </div>
-                <% portfolios.forEach(p => { %>
-                    <div class="mt-1 mb-1 is-flex is-flex-direction-column is-gap-0.5">
-                        <p><a href="/portfolio?id=<%= p._id %>" class="button is-link is-outlined is-small mt-1"><%= p.name %></a></p>
-                        <p class="is-size-7">$<%= (p.totalValue).toFixed(2) %></p>
-                    </div>
-                <% }); %>
+                <div class="is-flex is-flex-direction-column">
+                    <% portfolios.forEach(p => { %>
+                    <a href="/portfolio?id=<%= p._id %>" class="mt-2">
+                        <div class="is-flex is-flex-direction-column is-gap-0.5 button is-link is-outlined is-small">
+                            <p><%= p.name %></p>
+                            <p class="is-size-7">$<%= (p.totalValue).toFixed(2) %></p>
+                        </div>
+                    </a>
+                    <% }); %>
+                </div>
             </section>
             <% } %>
         </div>
@@ -65,29 +69,30 @@
     <% if (activePortfolio) { %>
     <div class="columns">
         <div class="column is-one-fifth">
-            <p class="ml-5 mr-5 mb-3"><a href="/portfolio">Back to Overview</a></p>
+            <p class="ml-5 mr-1 mb-5"><a href="/portfolio">Back to Overview</a></p>
             <% if (activePortfolio.edit) { %>
-                <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST" class="ml-5 mr-5 mt-2 mb-2">
+                <form action="/portfolio/<%= activePortfolio._id %>?_method=PUT" method="POST" class="ml-5 mr-5 mb-2">
                     <input type="text" name="name" value="<%= activePortfolio.name %>" class="input is-normal" />
-                    <button type="submit" class="button is-link mt-2">update</button>
+                    <button type="submit" class="button is-link mt-3">update</button>
                 </form>
             <% } else { %>
-                <h1 class="is-size-3 mt-2 mb-1 ml-5 mr-5"><%= activePortfolio.name %></h1>
+                <h1 class="is-size-3 mb-1 ml-5 mr-5"><%= activePortfolio.name %></h1>
             <% } %>
             <div class="mb-5 ml-5 mr-5">
                 <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a> |
                 <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
             </div>
-            <section class="ml-5 mr-5 mt-3 mb-4">
+            <div class="is-flex is-flex-direction-column ml-5 mr-5">
                 <% portfolios.forEach(p => { %>
-                    <div class="mt-1 mb-1 is-flex is-flex-direction-column is-gap-0.5">
-                        <p><a href="/portfolio?id=<%= p._id %>" class="button is-link is-outlined is-small mt-1"><%= p.name %></a></p>
+                <a href="/portfolio?id=<%= p._id %>" class="mt-2">
+                    <div class="is-flex is-flex-direction-column is-gap-0.5 button is-link is-outlined is-small">
+                        <p><%= p.name %></p>
                         <p class="is-size-7">$<%= (p.totalValue).toFixed(2) %></p>
                     </div>
+                </a>
                 <% }); %>
-            </section>
+            </div>
         </div>
-
         <div class="column">
             <div class="is-flex-direction-row is-flex is-gap-1 is-justify-content-left">
                 <h3 class="is-size-4">Portfolio Value</h3>
@@ -107,6 +112,9 @@
                             <th>Cost/Share</th>
                             <th>Gain/Loss $</th>
                             <th>Gain/Loss %</th>
+                            <% if (activePortfolio.edit) {%>
+                            <th></th>
+                            <% } %>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,7 +129,9 @@
                             <td><%= userStock.unrealizedPL %></td>
                             <td><%= userStock.unrealizedPLPercent %></td>
                             <% if (activePortfolio.edit) {%>
-                            <td><a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-light is-danger">remove</a></td>
+                            <td>
+                                <a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-light is-danger is-small">remove</a>
+                            </td>
                             <% } %>
                         </tr>
                     <% }) %>
@@ -136,6 +146,9 @@
                             <th>[AvgCost]</th>
                             <th>[GainLoss]$</th>
                             <th>[GainLoss]%</th>
+                            <% if (activePortfolio.edit) {%>
+                            <th></th>
+                            <% } %>
                         </tr>
                     </tfoot>
                 </table>

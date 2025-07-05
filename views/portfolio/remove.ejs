@@ -16,12 +16,15 @@
     <% } %>
 
     <% if (userStock) { %>
-    <h1 class="is-size-3">Remove Stock (<%= userStock.stock.symbol %>)</h1>
-    <p>Are you sure you want to remove <strong><%= userStock.stock.symbol %> (<%= userStock.stock.companyName %>)</strong> from your portfolio?</p>
-    <p>This will permanently remove the stock from <strong><%= portfolio.name %></strong> and delete all past trades.</p>
-    <form action="/portfolio/<%= portfolio._id %>/stocks/<%= userStock._id %>?_method=DELETE" method="POST">
-        <button type="submit" class="button is-light is-danger">Delete <%= userStock.stock.symbol %></button>
-    </form>
+    <p class="ml-5 mr-5 mt-3 mb-3"><a href="/portfolio?id=<%= portfolio._id %>">Back to Portfolio</a></p>
+    <div class="ml-5 mr-5">
+        <h1 class="is-size-3">Remove Stock</h1>
+        <p>Are you sure you want to remove <strong><%= userStock.stock.symbol %> (<%= userStock.stock.companyName %>)</strong> from your portfolio?</p>
+        <p>This will permanently remove the stock from <strong><%= portfolio.name %></strong> and delete all past trades.</p>
+        <form action="/portfolio/<%= portfolio._id %>/stocks/<%= userStock._id %>?_method=DELETE" method="POST">
+            <button type="submit" class="button is-light is-danger mt-3">Delete <%= userStock.stock.symbol %></button>
+        </form>
+    </div>
     <% } %>
 </body>
 </html>

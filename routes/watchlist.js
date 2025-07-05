@@ -16,7 +16,7 @@ router.get('/', isSignedIn, async (req, res) => {
     const watchlist = await Watchlist.findById(watchlistId).populate('stocks');
     if (req.query.edit) watchlist.edit = true;
       return res.render("watchlist/index", {
-      watchlists: null,
+      watchlists: watchlists,
       activeWatchlist: watchlist,
       stocks: null,
     });
