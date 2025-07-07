@@ -6,7 +6,7 @@
     <div class="columns">
         <div class="column is-one-fifth">
             <% if (!activePortfolio) { %>
-            <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">My Portfolios</h1>
+            <h1 class="is-size-3 ml-5 mr-3 mt-5 mb-2">My Portfolios</h1>
             <a href="/portfolio/new" class="button is-link ml-5 mr-3 mt-1 mb-1">+ Create Portfolio</a>
 
             <section class="ml-5 mr-3 mt-3 mb-4">
@@ -36,7 +36,7 @@
         <div class="column">
             <% if (userStocks) { %>
             <section class="ml-1 mr-6 mt-5 mb-5">
-                <h2 class="is-size-4 mb-4">All Positions</h2>
+                <h2 class="is-size-4 mb-5">All Positions</h2>
                 <table class="table is-hoverable is-fullwidth">
                 <thead>
                     <tr>
@@ -115,12 +115,12 @@
                 <% }); %>
             </div>
         </div>
-        <div class="column">
+        <div class="column mt-2">
             <div class="is-flex-direction-row is-flex is-gap-1 is-justify-content-left">
                 <h3 class="is-size-4">Portfolio Value</h3>
                 <h2 class="is-size-4">$<%= Number((activePortfolio.totalValue).toFixed(2)).toLocaleString() %></h2>
             </div>
-            <section class="mr-6 mt-2 mb-4">
+            <section class="mr-6 mt-4 mb-4">
                 <h3 class="is-size-4 mb-4">Positions</h3>
                 <!-- TODO-ST: Add a Portfolio Total Row for sums -->
                 <table class="table is-hoverable is-fullwidth">

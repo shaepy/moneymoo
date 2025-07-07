@@ -6,7 +6,7 @@
 
     <% if (!watchlists && !activeWatchlist) { %>
     <div>
-        <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">Watchlists</h1>
+        <h1 class="is-size-3 ml-5 mr-3 mt-5 mb-2">Watchlists</h1>
         <a href="/watchlist/new" class="button is-link ml-5 mr-5 mt-1 mb-1">+ New Watchlist</a>
     </div>
     <% } %>
@@ -15,7 +15,7 @@
     <div class="columns">
         <div class="column is-one-fifth">
             <div>
-                <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">Watchlists</h1>
+                <h1 class="is-size-3 ml-5 mr-3 mt-5 mb-2">Watchlists</h1>
                 <a href="/watchlist/new" class="button is-link ml-5 mr-5 mt-1 mb-1">+ New Watchlist</a>
             </div>
             <div class="ml-5 mr-5 mt-3 mb-4">
@@ -31,7 +31,7 @@
         </div>
         <div class="column">
             <% if (stocks) { %>
-            <section class="mr-5 mt-4">
+            <section class="ml-1 mr-6 mt-5 mb-5">
                 <h2 class="is-size-4 mb-3">Full List</h2>
                 <table class="table is-hoverable is-fullwidth">
                     <thead>
@@ -67,7 +67,7 @@
     <% if (activeWatchlist) { %>
         <div class="columns">
             <div class="column is-one-fifth ml-5 mr-5">
-                <p class="mr-5 mt-5 mb-3"><a href="/watchlist">Back to Watchlists</a></p>
+                <p class="mr-5 mt-5 mb-5"><a href="/watchlist">Back to Watchlists</a></p>
                 <% if (activeWatchlist.edit) { %>
                 <form action="/watchlist/<%= activeWatchlist._id %>?_method=PUT" method="POST" class="ml-1 mr-5 mt-2 mb-2">
                     <input type="text" name="name" value="<%= activeWatchlist.name %>" class="input is-normal" />
