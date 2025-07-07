@@ -3,31 +3,34 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-        <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4">Sign Up</h1>
+        <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4 has-text-centered">Sign Up</h1>
         <% if (userExists) { %>
-        <p><a href="/auth/sign-in">Log In</a> to your account</p>
+        <p class="is-size-6 ml-6 mr-6 mt-4 mb-4 has-text-centered"><a href="/auth/sign-in">Log In</a> to your account</p>
         <% } %>
         <% if (passwordsDontMatch) { %>
-            <p>Passwords do not match.</p>
+        <p class="is-size-6 ml-6 mr-6 mt-4 mb-4 has-text-centered">Passwords do not match.</p>
         <% } %>
-        <form action="/auth/sign-up" method="POST" class="box ml-6 mr-6">
-            <div class="field">
-                <label for="username" class="label">Username</label>
-                <input type="text" id="username" name="username" required class="input is-normal"/>
-            </div>
-            <div class="field">
-                <label for="email" class="label">Email</label>
-                <input type="email" id="email" name="email" required class="input is-normal" />
-            </div>
-            <div class="field">
-                <label for="password" class="label">Password</label>
-                <input type="password" id="password" name="password" required class="input is-normal" />
-            </div>
-            <div class="field">
-                <label for="confirmPassword" class="label">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required class="input is-normal" />
-            </div>
-            <button type="submit" class="button is-link">Create an account</button>
-        </form>
+
+        <div class="container" style="max-width: 500px;">
+            <form action="/auth/sign-up" method="POST" class="box ml-6 mr-6">
+                <div class="field">
+                    <label for="username" class="label">Username</label>
+                    <input type="text" id="username" name="username" required class="input is-normal"/>
+                </div>
+                <div class="field">
+                    <label for="email" class="label">Email</label>
+                    <input type="email" id="email" name="email" required class="input is-normal" />
+                </div>
+                <div class="field">
+                    <label for="password" class="label">Password</label>
+                    <input type="password" id="password" name="password" required class="input is-normal" />
+                </div>
+                <div class="field">
+                    <label for="confirmPassword" class="label">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required class="input is-normal" />
+                </div>
+                <button type="submit" class="button is-link">Create an account</button>
+            </form>
+        </div>
 </body>
 </html>

@@ -55,24 +55,15 @@ router.get('/new', isSignedIn, (req, res) => {
 router.get('/add', isSignedIn, async (req, res) => {
   const { symbol } = req.query;
   console.log('SYMBOL FROM REQ.QUERY:', symbol);
-
   let stock = await Stock.findOne({ symbol: symbol });
   console.log('FOUND STOCK?:', stock);
 
-  if (!stock) {
-    stock = await utils.createStockFromAPI(symbol);
-    console.log('STOCK CREATED:', stock);
-  }
+  if (!stock) stock = await utils.createStockFromAPI(symbol);
 
-  // get their watchlists
   const watchlists = await Watchlist.find({ userId: req.session.user._id });
   console.log('WATCHLISTS FOUND:', watchlists);
 
-  if (watchlists.length < 1) {
-    console.log('NO WATCHLISTS FOUND. REDIRECTING TO /WATCHLIST');
-    return res.redirect('/watchlist');
-  }
-
+  if (watchlists.length < 1) return res.redirect('/watchlist/new');
   res.render('watchlist/add', {
     stock: stock,
     watchlists: watchlists,
@@ -81,9 +72,7 @@ router.get('/add', isSignedIn, async (req, res) => {
 
 router.get("/:watchlistId/remove", isSignedIn, async (req, res) => {
   const watchlist = await Watchlist.findById(req.params.watchlistId).populate("stocks");
-  res.render("watchlist/remove", {
-    watchlist,
-  });
+  res.render("watchlist/remove", { watchlist });
 });
 
 /* ------------------------ POST ROUTES -------------------------- */

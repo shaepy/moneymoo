@@ -3,6 +3,14 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
+
+    <% if (!watchlists && !activeWatchlist) { %>
+    <div>
+        <h1 class="is-size-3 ml-5 mr-3 mt-4 mb-2">Watchlists</h1>
+        <a href="/watchlist/new" class="button is-link ml-5 mr-5 mt-1 mb-1">+ New Watchlist</a>
+    </div>
+    <% } %>
+
     <% if (watchlists && !activeWatchlist) { %>
     <div class="columns">
         <div class="column is-one-fifth">
@@ -123,7 +131,7 @@
     <% } %>
 
     <% if (!stocks && !activeWatchlist) { %>
-    <p class="ml-5 mr-5 mt-4"><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
+    <p class="ml-5 mr-5 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
     <% } %>
 </body>
 </html>

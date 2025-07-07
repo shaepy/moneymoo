@@ -15,12 +15,15 @@ router.get("/", isSignedIn, async (req, res) => {
 
   if (portfolioId) {
     const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
-    utils.calculateMktValueAndPL(portfolio.userStocks);
+    await utils.calculateMktValueAndPL(portfolio.userStocks);
+    const portfolioSummary = await utils.calcPortfoliosSum(portfolio.userStocks);
+    console.log('SUMMARY:', portfolioSummary);
     if (req.query.edit) portfolio.edit = true;
     return res.render("portfolio/index", {
       portfolios: portfolios,
       activePortfolio: portfolio,
       userStocks: null,
+      summary: portfolioSummary
     });
   }
   const stockLists = portfolios.filter(list => list.userStocks.length > 0).map(list => list.userStocks).flat();
@@ -34,12 +37,14 @@ router.get("/", isSignedIn, async (req, res) => {
       activePortfolio: null,
       userStocks: null,
       portfoliosSumValue: null,
+      summary: null,
     });
   }
   const userStocks = [...new Set(stockLists)];
-  console.log('USERSTOCKS IS:', userStocks);
-  utils.calculateMktValueAndPL(userStocks);
- 
+  await utils.calculateMktValueAndPL(userStocks);
+  const portfoliosSum = await utils.calcPortfoliosSum(userStocks);
+  console.log('PORTFOLIO SUMS:', portfoliosSum);
+
   // we are checking for stocks before we check for portfolios ?
   // * if there are any portfolios
   if (portfolios.length > 0) {
@@ -51,6 +56,7 @@ router.get("/", isSignedIn, async (req, res) => {
       activePortfolio: null,
       portfoliosSumValue,
       userStocks: userStocks,
+      summary: portfoliosSum,
     });
     // else there aren't any? 
   } else {
@@ -59,6 +65,7 @@ router.get("/", isSignedIn, async (req, res) => {
       activePortfolio: null,
       userStocks: null,
       portfoliosSumValue: null,
+      summary: null,
     });
   }
 });
@@ -67,7 +74,6 @@ router.get("/new", isSignedIn, (req, res) => {
   res.render("portfolio/new");
 });
 
-// * for both userStocks and portfolios
 router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
   const stockId = req.query.id;
   const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");

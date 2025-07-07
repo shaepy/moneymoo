@@ -3,20 +3,22 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4">Log In</h1>
+    <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4 has-text-centered">Log In</h1>
     <% if (loginError) { %>
-    <p>Login failed. Please try again.</p>
+    <p class="is-size-6 ml-6 mr-6 mt-4 mb-4 has-text-centered">Login failed. Please try again.</p>
     <% } %>
-    <form action="/auth/sign-in" method="POST" class="box ml-6 mr-6">
-    <div class=field>
-        <label for="username" class="label">Username or Email</label>
-        <input type="text" id="username" name="username" required class="input is-normal" />
+    <div class="container" style="max-width: 450px;">
+        <form action="/auth/sign-in" method="POST" class="box">
+            <div class=field>
+                <label for="username" class="label">Username or Email</label>
+                <input type="text" id="username" name="username" required class="input is-normal" />
+            </div>
+            <div class="field">
+                <label for="password" class="label">Password</label>
+                <input type="password" id="password" name="password" required class="input is-normal" />
+            </div>
+            <button type="submit" class="button is-link">Log In</button>
+        </form>
     </div>
-    <div class="field">
-        <label for="password" class="label">Password</label>
-        <input type="password" id="password" name="password" required class="input is-normal" />
-    </div>
-    <button type="submit" class="button is-link">Log In</button>
-    </form>
 </body>
 </html>

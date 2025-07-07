@@ -4,7 +4,19 @@
 <body>
   <% if (user) { %>
     <%- include('partials/_navbar') %>
-    <h1 class="is-size-2 m-5">Welcome back, <%= user.username %></h1>
+    <h1 class="is-size-2 m-5 has-text-centered">Welcome back, <%= user.username %></h1>
+    <div class="is-flex is-flex-direction-row is-justify-content-center is-gap-2 is-flex-wrap">
+      <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
+        <p class="is-size-4 mb-2" style="min-width: 225px;">Portfolios</p>
+        <p><a href="/portfolio" class="button is-link is-outlined">Go to Portfolios</a></p>
+        <p><a href="/portfolio/new" class="button is-link">+ New Portfolio</a></p>
+      </div>
+      <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
+        <p class="is-size-4 mb-2" style="min-width: 225px;">Watchlists</p>
+        <p><a href="/watchlist" class="button is-link is-outlined">Go to Watchlists</a></p>
+        <p><a href="/watchlist/new" class="button is-link">+ New Watchlist</a></p>
+      </div>
+    </div>
   <% } else { %>
     <div class="is-flex is-flex-direction-column is-justify-content-center is-max-tablet">
       <h1 class="is-size-2 has-text-centered mt-6">Welcome to moneymoo</h1>

@@ -12,11 +12,17 @@
 
             <% if (portfolios && !activePortfolio) { %>
             <section class="ml-5 mr-3 mt-3 mb-4">
-                <div class="mb-3">
+                <div>
                     <%- portfoliosSumValue && `<h2 class="is-size-4">Overview</h2>` %>
                     <%- portfoliosSumValue && `<h2 class="is-size-3">$${portfoliosSumValue.toFixed(2)}</h2>` %>
                 </div>
-                <div class="is-flex is-flex-direction-column">
+                <% if (summary) { %>
+                <div class="mt-2">
+                    <p class="is-size-7"><strong>Gain/Loss $</strong> <%= summary.unrealizedPL %></p>
+                    <p class="is-size-7"><strong>Gain/Loss %</strong> <%= summary.unrealizedPLPercent %></p>
+                </div>
+                <% } %>
+                <div class="is-flex is-flex-direction-column mt-3">
                     <% portfolios.forEach(p => { %>
                     <a href="/portfolio?id=<%= p._id %>" class="mt-2">
                         <div class="is-flex is-flex-direction-column is-gap-0.5 button is-link is-outlined is-small">
@@ -60,6 +66,18 @@
                     </tr>
                 <% }) %>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Summary</th>
+                        <th><%= summary.qtSum %></th>
+                        <th></th>
+                        <th>$<%= summary.mktValueSum %></th>
+                        <th>$<%= summary.costBasisSum %></th>
+                        <th></th>
+                        <th>$<%= summary.unrealizedPL %></th>
+                        <th><%= summary.unrealizedPLPercent %></th>
+                    </tr>
+                </tfoot>
                 </table>
             </section>
             <% } %>
@@ -78,11 +96,17 @@
             <% } else { %>
                 <h1 class="is-size-3 mb-1 ml-5 mr-5"><%= activePortfolio.name %></h1>
             <% } %>
-            <div class="mb-5 ml-5 mr-5">
+            <div class="ml-5 mr-5 mb-4">
                 <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a> |
                 <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
             </div>
-            <div class="is-flex is-flex-direction-column ml-5 mr-5">
+            <% if (summary) { %>
+            <div class="mt-2 ml-5 mr-5">
+                <p class="is-size-7"><strong>Gain/Loss $</strong> <%= summary.unrealizedPL %></p>
+                <p class="is-size-7"><strong>Gain/Loss %</strong> <%= summary.unrealizedPLPercent %></p>
+            </div>
+            <% } %>
+            <div class="is-flex is-flex-direction-column ml-5 mr-5 mt-4">
                 <% portfolios.forEach(p => { %>
                 <a href="/portfolio?id=<%= p._id %>" class="mt-2">
                     <div class="is-flex is-flex-direction-column is-gap-0.5 button is-link is-outlined is-small">
@@ -139,13 +163,13 @@
                     <tfoot>
                         <tr>
                             <th>Summary</th>
-                            <th>[Qt]</th>
-                            <th>[Price]</th>
-                            <th>[MktValue]</th>
-                            <th>[CostBasis]</th>
-                            <th>[AvgCost]</th>
-                            <th>[GainLoss]$</th>
-                            <th>[GainLoss]%</th>
+                            <th><%= summary.qtSum %></th>
+                            <th></th>
+                            <th>$<%= summary.mktValueSum %></th>
+                            <th>$<%= summary.costBasisSum %></th>
+                            <th></th>
+                            <th>$<%= summary.unrealizedPL %></th>
+                            <th><%= summary.unrealizedPLPercent %></th>
                             <% if (activePortfolio.edit) {%>
                             <th></th>
                             <% } %>

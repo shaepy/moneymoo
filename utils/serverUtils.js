@@ -1,5 +1,6 @@
 const Stock = require("../models/stock.js");
 const Portfolio = require("../models/portfolio.js");
+const user = require("../models/user.js");
 
 const createStockFromAPI = async (symbol) => {
   const response = await fetch(
@@ -68,6 +69,11 @@ const calculateMktValueAndPL = async (userStocksArray) => {
     userStock.unrealizedPLPercent = (
       ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
     ).toFixed(2);
+    // console.log(
+    //   'userStock marketValue:', userStock.marketValue,
+    //   'userStock unrealized PL:', userStock.unrealizedPL,
+    //   'userStock unrealized PL %:', userStock.unrealizedPLPercent
+    // );
   });
 };
 
@@ -94,6 +100,32 @@ const handleTradeType = async (portfolio, trades, trade, stock) => {
   }
 };
 
+const calcPortfoliosSum = async (userStocksArray) => {
+  const qtSum = userStocksArray.reduce((total, userStock) => total + userStock.quantity, 0);
+  const mktValueSum = userStocksArray.reduce((total, userStock) => {
+    return total + Number(userStock.marketValue);
+  }, 0);
+  const costBasisSum = userStocksArray.reduce((total, userStock) => total + userStock.totalCost, 0);
+  const unrealizedPL = mktValueSum - costBasisSum;
+  const unrealizedPLPercent = ((mktValueSum - costBasisSum) / costBasisSum) * 100;
+
+  console.log( 
+    'qtSum:', qtSum,
+    'mktValueSum:', mktValueSum,
+    'costBasisSum:', costBasisSum,
+    'unrealizedPL:', unrealizedPL,
+    'unrealizedPLPercent:', unrealizedPLPercent
+  );
+
+  return {
+    qtSum: qtSum, 
+    mktValueSum: mktValueSum.toFixed(2), 
+    costBasisSum: costBasisSum.toFixed(2), 
+    unrealizedPL: unrealizedPL.toFixed(2), 
+    unrealizedPLPercent: unrealizedPLPercent.toFixed(2)
+  };
+};
+
 module.exports = {
     createStockFromAPI,
     updatePortfolioTotalValue,
@@ -103,4 +135,5 @@ module.exports = {
     fetchStockProfileFromAPI,
     fetchFinancialsFromAPI,
     calculateMktValueAndPL,
+    calcPortfoliosSum,
 };
