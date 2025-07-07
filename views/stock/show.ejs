@@ -1,11 +1,11 @@
 <%- include('../partials/_header') %>
     <title><%= stock.symbol %></title>
 </head>
-<body>
+<body class="has-navbar-fixed-top">
     <%- include('../partials/_navbar') %>
     <div class="ml-6 mr-6">
         <div class="is-flex is-flex-direction-column is-align-items-center ml-6 mr-6 mb-6">
-            <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center is-gap-5 m-2 mt-6">
+            <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center is-gap-5 m-2">
                 <img src="<%= stock.image %>" alt="logo for <%= stock.symbol %>" class="image is-96x96"/>
                 <div>
                     <h1 class="is-size-4"><%= stock.symbol %> • <%= stock.exchange %></h1>
@@ -79,9 +79,9 @@
         </div>
 
         <% if (financials) { %>
-            <div class="is-flex is-flex-direction-row is-justify-content-center">
-                <div class="is-flex is-flex-direction-column m-5">
-                    <div class="box content container has-text-centered is-flex is-flex-direction-column is-align-items-center is-justify-content-center" style="max-width: 450px; min-width: 400px;">
+            <div class="is-flex is-flex-direction-row is-align-items-top is-justify-content-center">
+                <div class="is-flex is-flex-direction-column is-justify-content-top m-5">
+                    <div class="box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Financial Overview</h3>
                         <table class="table">
                             <tbody>
@@ -117,7 +117,7 @@
                         </table>
                     </div>
                     <% if (financials.cashFlowPerShareTTM || financials.cashFlowPerShareQuarterly || financials.cashFlowPerShareAnnual) { %>
-                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 400px;">
+                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Cash Flow</h3>
                         <table class="table">
                             <tbody>
@@ -138,7 +138,7 @@
                     </div>
                     <% } %>
                     <% if (financials.currentRatioAnnual || financials.currentRatioQuarterly || financials.peTTM) { %>
-                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 400px;">
+                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Price-to-Earnings</h3>
                         <table class="table">
                             <tbody>
@@ -159,9 +159,9 @@
                     </div>
                     <% } %>
                 </div>
-                <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center m-5">
+                <div class="is-flex is-flex-direction-column is-align-items-center m-5">
                     <% if (financials.revenuePerShareAnnual || financials.revenuePerShareTTM) { %>
-                    <div class="box content container has-text-centered is-flex is-flex-direction-column is-align-items-center" style="max-width: 450px; min-width: 400px;">
+                    <div class="box content container has-text-centered is-flex is-flex-direction-column is-align-items-center" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Revenue</h3>
                         <table class="table">
                             <tbody>
@@ -190,7 +190,7 @@
                     </div>
                     <% } %>
                     <% if (financials.epsAnnual) { %>
-                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 400px;">
+                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Earnings Per Share</h3>
                         <table class="table">
                             <tbody>
@@ -215,7 +215,7 @@
                     </div>
                     <% } %>
                     <% if (financials.pb) { %>
-                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 400px;">
+                    <div class="mt-5 box content container has-text-centered is-flex is-flex-direction-column" style="max-width: 450px; min-width: 425px;">
                         <h3 class="is-size-4 title">Price-to-Book</h3>
                         <table class="table">
                             <tbody>

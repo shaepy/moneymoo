@@ -14,7 +14,9 @@ const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
 const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js")
-const userToView = require("./middleware/user-to-view.js")
+const userToView = require("./middleware/user-to-view.js");
+const Stock = require("./models/stock.js");
+const utils = require("./utils/serverUtils.js")
 
 const app = express();
 app.set("view engine", "ejs");
@@ -54,7 +56,8 @@ app.use(userToView);
 
 app.use('/auth', authController);
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  await testCron();
   res.render("index");
 });
 
@@ -69,34 +72,32 @@ app.listen(process.env.PORT, () => {
 
 /* --------- FETCH CURRENT STOCK PRICES --------- */
 
-cron.schedule("*/10 * * * *", () => {
-  console.log('running a task every 10 minutes');
-  // write the cron job for updating the stock prices
+cron.schedule("*/45 * * * *", async () => {
+  console.log("RUNNING A CRON JOB TO UPDATE STOCK PRICES. SET TO EVERY 45 MIN");
   // test with minutes, 1 ping per minute (200/min max)
+  const stocks = await Stock.find();
+  console.log("STOCKS:", stocks);
 
-  /*
-    const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      'APCA-API-KEY-ID': `${process.env.APCA-API-KEY-ID}`,
-      'APCA-API-SECRET-KEY': `${process.env.APCA-API-SECRET-KEY}`
-    }
+  const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
+  const data = await utils.fetchPricesFromAPI(stockSymbols);
+  console.log("DATA IS:", data);
+
+  const newPrices = [];
+  Object.keys(data.bars).forEach((key) => {
+    const newObj = { symbol: key, price: data.bars[key].c };
+    newPrices.push(newObj);
+  });
+  console.log("NEW PRICES:", newPrices);
+
+  const bulkOps = newPrices.map((stock) => {
+    return {
+      updateOne: {
+        filter: { symbol: stock.symbol },
+        update: { $set: { price: stock.price } },
+      },
     };
+  });
+  console.log("BULKOPS:", bulkOps);
 
-    # replace ${symbol} with database stock symbols
-  
-    async function fetchPrices() {
-      try {
-        const response = await fetch('https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbol}', options);
-        const data = await response.json();
-        console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    fetchPrices();
-  */
-
+  await utils.updateStockPrices(bulkOps);
 });
