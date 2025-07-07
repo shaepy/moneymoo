@@ -7,7 +7,6 @@ const createStockFromAPI = async (symbol) => {
       `https://financialmodelingprep.com/stable/profile?symbol=${symbol}&apikey=${process.env.FMP_APIKEY}`
     );
     const stock = await response.json();
-    console.log("STOCK API RESPONSE:", stock);
     return await Stock.create(stock[0]);
   } catch (err) {
     console.error("Failed to fetch stock data", err);
@@ -72,12 +71,15 @@ const calculateMktValueAndPL = async (userStocksArray) => {
     userStock.unrealizedPLPercent = (
       ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
     ).toFixed(2);
-    // console.log(
-    //   'userStock marketValue:', userStock.marketValue,
-    //   'userStock unrealized PL:', userStock.unrealizedPL,
-    //   'userStock unrealized PL %:', userStock.unrealizedPLPercent
-    // );
   });
+};
+
+const getPortfoliosSumValue = async (portfolios) => {
+  let portfoliosSumValue = portfolios.reduce((total, portfolio) => {
+    return total + portfolio.totalValue;
+  }, 0);
+  portfoliosSumValue = Number(portfoliosSumValue.toFixed(2)).toLocaleString();
+  return portfoliosSumValue;
 };
 
 const handleTradeType = async (portfolio, trades, trade, stock) => {
@@ -121,10 +123,10 @@ const calcPortfoliosSum = async (userStocksArray) => {
   );
   return {
     qtSum: qtSum,
-    mktValueSum: mktValueSum.toFixed(2),
-    costBasisSum: costBasisSum.toFixed(2),
-    unrealizedPL: unrealizedPL.toFixed(2),
-    unrealizedPLPercent: unrealizedPLPercent.toFixed(2),
+    mktValueSum: Number(mktValueSum.toFixed(2)).toLocaleString(),
+    costBasisSum: Number(costBasisSum.toFixed(2)).toLocaleString(),
+    unrealizedPL: Number(unrealizedPL.toFixed(2)).toLocaleString(),
+    unrealizedPLPercent: Number(unrealizedPLPercent.toFixed(2)).toLocaleString(),
   };
 };
 
@@ -135,7 +137,7 @@ async function updateStockPrices(bulkOps) {
   } catch (error) {
     console.error("Error updating stock prices:", error);
   }
-}
+};
 
 async function fetchPricesFromAPI(symbols) {
   const options = {
@@ -155,7 +157,7 @@ async function fetchPricesFromAPI(symbols) {
   } catch (err) {
     console.error("Error with fetching stock prices:", err);
   }
-}
+};
 
 module.exports = {
   createStockFromAPI,
@@ -169,4 +171,5 @@ module.exports = {
   calcPortfoliosSum,
   updateStockPrices,
   fetchPricesFromAPI,
+  getPortfoliosSumValue,
 };

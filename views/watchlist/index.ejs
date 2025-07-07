@@ -22,8 +22,8 @@
                 <h2 class="is-size-4 mb-3">Overview</h2>
                     <div class="is-flex is-flex-direction-column is-gap-1">
                     <% watchlists.forEach(list => { %>
-                    <a href="/watchlist?id=<%= list._id %>">
-                        <p class="button is-link is-outlined is-small"><%= list.name %></p>
+                    <a class="button is-link is-outlined is-small" style="max-width: 200px;" href="/watchlist?id=<%= list._id %>">
+                        <p><%= list.name %></p>
                     </a>
                     <% }); %>
                 </div>
@@ -82,8 +82,8 @@
                 </div>
                 <div class="is-flex is-flex-direction-column is-gap-1 mt-5">
                     <% watchlists.forEach(list => { %>
-                    <a href="/watchlist?id=<%= list._id %>">
-                        <p class="button is-link is-outlined is-small"><%= list.name %></p>
+                    <a class="button is-link is-outlined is-small" style="max-width: 200px;" href="/watchlist?id=<%= list._id %>">
+                        <p><%= list.name %></p>
                     </a>
                     <% }); %>
                 </div>

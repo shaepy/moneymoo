@@ -6,20 +6,47 @@
     <%- include('partials/_navbar') %>
     <h1 class="is-size-2 has-text-centered mt-6 mb-5 ml-5 mr-5">Welcome back, <%= user.username %></h1>
     <div class="is-flex is-flex-direction-row is-justify-content-center is-gap-2 is-flex-wrap-wrap">
+
       <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
-        <p class="is-size-4 mb-2" style="min-width: 225px;">Portfolios</p>
-        <p><a href="/portfolio" class="button is-link is-outlined">Go to Portfolios</a></p>
-        <p><a href="/portfolio/new" class="button is-link mt-1">+ New Portfolio</a></p>
+        <p class="is-size-4 mb-2" style="min-width: 345px;">Portfolios</p>
+        <% if (portfolios) { %>
+          <p>Total $<%= portfoliosSumValue %></p>
+          <table class="table">
+            <tbody>
+            <% portfolios.forEach(portfolio => { %>
+              <tr>
+                <td><a href="/portfolio?id=<%= portfolio._id %>"><%= portfolio.name %></a></td>
+                <td>$<%= Number(portfolio.totalValue.toFixed(2)).toLocaleString(); %></td>
+              </tr>
+            <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+        <p><a href="/portfolio" class="button is-link is-outlined is-small">Go to Portfolios</a></p>
+        <p><a href="/portfolio/new" class="button is-link mt-1 is-small">+ New Portfolio</a></p>
       </div>
+
       <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
-        <p class="is-size-4 mb-2" style="min-width: 225px;">Watchlists</p>
-        <p><a href="/watchlist" class="button is-link is-outlined">Go to Watchlists</a></p>
-        <p><a href="/watchlist/new" class="button is-link mt-1">+ New Watchlist</a></p>
+        <p class="is-size-4 mb-2" style="min-width: 345px;">Watchlists</p>
+        <% if (watchlists) { %>
+          <table class="table">
+            <tbody>
+            <% watchlists.forEach(watchlist => { %>
+              <tr>
+                <td><a href="/watchlist?id=<%= watchlist._id %>"><%= watchlist.name %></a></td>
+              </tr>
+            <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+        <p><a href="/watchlist" class="button is-link is-outlined is-small">Go to Watchlists</a></p>
+        <p><a href="/watchlist/new" class="button is-link mt-1 is-small">+ New Watchlist</a></p>
       </div>
+
     </div>
   <% } else { %>
     <div class="is-flex is-flex-direction-column is-justify-content-center is-max-tablet">
-      <h1 class="is-size-2 has-text-centered mt-6">Welcome to moneymoo</h1>
+      <h1 class="is-size-2 has-text-centered mt-4">Welcome to moneymoo</h1>
       <p class="is-size-5 has-text-centered mt-2">let's start milking your gains</p>
       <div class="mt-4 is-flex is-flex-direction-row is-justify-content-center is-gap-2">
         <a href="/auth/sign-up" class="button is-link">Sign Up</a>

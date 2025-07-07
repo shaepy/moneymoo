@@ -27,10 +27,6 @@ router.post("/", async (req, res) => {
   res.redirect("/search/results");
 });
 
-/* ------------------------- PUT ROUTES -------------------------- */
-
-/* ------------------------ DELETE ROUTES ------------------------ */
-
 /* ------------------------- FUNCTIONS --------------------------- */
 
 const fetchResultsFromAPI = async (symbol) => {

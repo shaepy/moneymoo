@@ -1,23 +1,27 @@
 const dotenv = require("dotenv");
 dotenv.config();
-const path = require("path");
 const express = require("express");
-const mongoose = require("mongoose");
-const methodOverride = require("method-override");
 const morgan = require("morgan");
 const session = require('express-session');
-// const MongoStore = require("connect-mongo");
+const methodOverride = require("method-override");
+const mongoose = require("mongoose");
 const cron = require("node-cron");
+const path = require("path");
 
+// * Models
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
 const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js")
-const userToView = require("./middleware/user-to-view.js");
 const Stock = require("./models/stock.js");
-const utils = require("./utils/serverUtils.js")
 
+// * Middleware
+const utils = require("./utils/serverUtils.js");
+const queries = require("./controllers/queries/queries.js");
+const userToView = require("./middleware/user-to-view.js");
+
+// * App
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -57,8 +61,30 @@ app.use(userToView);
 app.use('/auth', authController);
 
 app.get('/', async (req, res) => {
-  await testCron();
-  res.render("index");
+  // get user portfolios and watchlists
+  if (req.session.user) {
+
+    const portfolios = await queries.getUserPortfolios(req.session.user._id);
+    console.log('PORTFOLIOS:', portfolios);
+    const watchlists = await queries.getUserWatchlists(req.session.user._id);
+    console.log('WATCHLISTS:', watchlists);
+
+    const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
+    console.log('PORTFOLIOS SUM VALUE:', portfoliosSumValue);
+
+    res.render("index", {
+      portfolios: portfolios,
+      watchlists: watchlists,
+      portfoliosSumValue,
+    });
+
+  } else {
+    res.render("index", {
+      portfolios: null,
+      watchlists: null,
+    });
+  }
+
 });
 
 app.use('/portfolio', portfolioRoutes);
@@ -70,14 +96,13 @@ app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
 });
 
-/* --------- FETCH CURRENT STOCK PRICES --------- */
+/* --------- FETCH STOCK PRICES --------- */
+// # Alpaca limits MAX of 200 calls/min
 
 cron.schedule("*/45 * * * *", async () => {
   console.log("RUNNING A CRON JOB TO UPDATE STOCK PRICES. SET TO EVERY 45 MIN");
-  // test with minutes, 1 ping per minute (200/min max)
   const stocks = await Stock.find();
   console.log("STOCKS:", stocks);
-
   const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
   const data = await utils.fetchPricesFromAPI(stockSymbols);
   console.log("DATA IS:", data);
@@ -97,7 +122,7 @@ cron.schedule("*/45 * * * *", async () => {
       },
     };
   });
-  console.log("BULKOPS:", bulkOps);
+  console.log("BULK OPS:", bulkOps);
 
   await utils.updateStockPrices(bulkOps);
 });

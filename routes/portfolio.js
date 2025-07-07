@@ -29,9 +29,9 @@ router.get("/", isSignedIn, async (req, res) => {
   const stockLists = portfolios.filter(list => list.userStocks.length > 0).map(list => list.userStocks).flat();
   console.log('CONSOLIDATED LISTS:', stockLists);
 
-  // FIX: if no stocks are found, portfolio or not it will return here
-  if (stockLists.length < 1) {
-    console.log('NO STOCKS FOUND');
+  // * if no stocks or no portfolios are found, it will return here
+  if (stockLists.length < 1 || portfolios.length < 1) {
+    console.log('NO STOCKS FOUND OR NO PORTFOLIOS FOUND');
     return res.render('portfolio/index', {
       portfolios: portfolios,
       activePortfolio: null,
@@ -40,34 +40,23 @@ router.get("/", isSignedIn, async (req, res) => {
       summary: null,
     });
   }
+
   const userStocks = [...new Set(stockLists)];
   await utils.calculateMktValueAndPL(userStocks);
-  const portfoliosSum = await utils.calcPortfoliosSum(userStocks);
-  console.log('PORTFOLIO SUMS:', portfoliosSum);
+  const portfoliosSummary = await utils.calcPortfoliosSum(userStocks);
+  console.log('PORTFOLIO SUMMARY:', portfoliosSummary);
 
-  // we are checking for stocks before we check for portfolios ?
-  // * if there are any portfolios
-  if (portfolios.length > 0) {
-    const portfoliosSumValue = portfolios.reduce((total, portfolio) => {
-      return total + portfolio.totalValue;
-    }, 0);
-    res.render("portfolio/index", {
-      portfolios: portfolios,
-      activePortfolio: null,
-      portfoliosSumValue,
-      userStocks: userStocks,
-      summary: portfoliosSum,
-    });
-    // else there aren't any? 
-  } else {
-    res.render("portfolio/index", {
-      portfolios: null,
-      activePortfolio: null,
-      userStocks: null,
-      portfoliosSumValue: null,
-      summary: null,
-    });
-  }
+  const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
+  console.log('PORTFOLIOS SUM VALUE:', portfoliosSumValue);
+
+  res.render("portfolio/index", {
+    portfolios: portfolios,
+    activePortfolio: null,
+    portfoliosSumValue,
+    userStocks: userStocks,
+    summary: portfoliosSummary,
+  });
+
 });
 
 router.get("/new", isSignedIn, (req, res) => {
@@ -145,18 +134,18 @@ router.post("/:portfolioId", async (req, res) => {
   const tradeDate = new Date(date);
   const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
 
-  let stock = await Stock.findOne({ symbol: symbol });
-  console.log("did we find a stock?:", stock);
+  let stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
+  console.log("DID WE FIND A STOCK?:", stock);
   if (!stock) stock = await utils.createStockFromAPI(symbol);
 
   const trades = await Trade.find({
     $and: [{ stock: stock._id }, { portfolioId: portfolio._id }],
   });
-  console.log("trades found?:", trades);
+  console.log("TRADES FOUND?:", trades);
 
   if (type.toLowerCase() === "sell" && trades.length <= 0) {
     // TODO-ST: handle user facing message
-    console.log(`This is an INVALID trade. type = 'sell' but NO trades found`);
+    console.log(`This is an INVALID trade. TYPE = 'sell' but NO trades found.`);
     return res.redirect(`/portfolio?id=${req.params.portfolioId}`);
   }
 
@@ -169,13 +158,12 @@ router.post("/:portfolioId", async (req, res) => {
     notes: notes || null,
     portfolioId: portfolio._id,
   });
-  console.log("created new trade:", trade);
+  console.log("NEW TRADE:", trade);
 
   if (trades.length > 0) {
     // check for BUY or SELL
     await utils.handleTradeType(portfolio, trades, trade, stock);
   } else {
-    console.log('not an existing stock in the portfolio');
     const userStock = {
       stock: stock._id,
       costBasis: Number(price),
@@ -198,7 +186,6 @@ router.put("/:portfolioId", async (req, res) => {
 });
 
 router.put("/:portfolioId/trades/:tradeId", async (req, res) => {
-  console.log('req.body:', req.body);
   const date = new Date(req.body.date);
   await Trade.findByIdAndUpdate(req.params.tradeId, {
     date: date,

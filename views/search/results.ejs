@@ -3,18 +3,18 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-    <h1 class="is-size-3 ml-5 mr-5 mb-2 mt-5">Search Results</h1>
+    <h1 class="is-size-3 ml-6 mr-6 mb-2 mt-5">Search Results</h1>
     <% if (results) { %>
-    <p class="ml-5 mr-5">Showing <%= results.length %> results found.</p>
-        <div class="ml-5 mr-5">
-            <% results.forEach((result) => { %>
-            <div class="mt-4 mb-3">
-                <p><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
-                <p>Name: <%= result.name %></p>
-                <p>Exchange: <%= result.exchangeFullName %> (<%= result.exchange %>)</p>
-            </div>
-            <% }) %>
+    <p class="ml-6 mr-6">Showing <%= results.length %> results found.</p>
+    <div class="ml-6 mr-6">
+        <% results.forEach((result) => { %>
+        <div class="mt-4 mb-3">
+            <p class="button is-link is-outlined"><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
+            <p>Name: <%= result.name %></p>
+            <p>Exchange: <%= result.exchangeFullName %> (<%= result.exchange %>)</p>
         </div>
+        <% }) %>
+    </div>
     <% } else { %>
         <p>No results found.</p>
     <% } %>

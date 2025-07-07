@@ -46,10 +46,4 @@ router.get('/:stockSymbol', async (req, res) => {
     res.render(`stock/show`, { stock: profile, financials: financials });
 });
 
-/* ------------------------- POST ROUTES -------------------------- */
-
-/* ------------------------- PUT ROUTES -------------------------- */
-
-/* ------------------------ DELETE ROUTES ------------------------ */
-
 module.exports = router;

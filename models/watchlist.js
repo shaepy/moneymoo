@@ -9,7 +9,6 @@ const watchlistSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     stocks: [{
         type: mongoose.Schema.Types.ObjectId,
