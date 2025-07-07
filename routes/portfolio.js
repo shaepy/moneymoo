@@ -1,33 +1,33 @@
 const express = require("express");
-const Portfolio = require("../models/portfolio.js");
-const User = require("../models/user.js");
-const Trade = require("../models/trade.js");
-const Stock = require("../models/stock.js");
-const router = express.Router();
 const isSignedIn = require("../middleware/is-signed-in.js");
+const Portfolio = require("../models/portfolio.js");
+const Trade = require("../models/trade.js");
+const router = express.Router();
 const utils = require("../utils/serverUtils.js");
+const queries = require("../controllers/queries/queries.js");
 
 /* ------------------------- GET ROUTES ------------------------- */
 
 router.get("/", isSignedIn, async (req, res) => {
   const portfolioId = req.query.id;
-  const portfolios = await Portfolio.find({ userId: req.session.user._id}).populate("userStocks.stock");
+  const portfolios = await queries.getUserPortfolios(req.session.user._id);
 
   if (portfolioId) {
-    const portfolio = await Portfolio.findById(portfolioId).populate("userStocks.stock");
+    const portfolio = await queries.getPortfolioById(portfolioId);
     await utils.calculateMktValueAndPL(portfolio.userStocks);
-    const portfolioSummary = await utils.calcPortfoliosSum(portfolio.userStocks);
-    console.log('SUMMARY:', portfolioSummary);
+    const portfolioSummary = await utils.calcPortfoliosSummary(portfolio.userStocks);
     if (req.query.edit) portfolio.edit = true;
     return res.render("portfolio/index", {
       portfolios: portfolios,
       activePortfolio: portfolio,
       userStocks: null,
-      summary: portfolioSummary
+      summary: portfolioSummary,
     });
   }
-  const stockLists = portfolios.filter(list => list.userStocks.length > 0).map(list => list.userStocks).flat();
-  console.log('CONSOLIDATED LISTS:', stockLists);
+  const stockLists = portfolios
+    .filter((list) => list.userStocks.length > 0)
+    .map((list) => list.userStocks)
+    .flat();
 
   // * if no stocks or no portfolios are found, it will return here
   if (stockLists.length < 1 || portfolios.length < 1) {
@@ -40,14 +40,10 @@ router.get("/", isSignedIn, async (req, res) => {
       summary: null,
     });
   }
-
   const userStocks = [...new Set(stockLists)];
   await utils.calculateMktValueAndPL(userStocks);
-  const portfoliosSummary = await utils.calcPortfoliosSum(userStocks);
-  console.log('PORTFOLIO SUMMARY:', portfoliosSummary);
-
+  const portfoliosSummary = await utils.calcPortfoliosSummary(userStocks);
   const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
-  console.log('PORTFOLIOS SUM VALUE:', portfoliosSumValue);
 
   res.render("portfolio/index", {
     portfolios: portfolios,
@@ -56,7 +52,6 @@ router.get("/", isSignedIn, async (req, res) => {
     userStocks: userStocks,
     summary: portfoliosSummary,
   });
-
 });
 
 router.get("/new", isSignedIn, (req, res) => {
@@ -65,15 +60,14 @@ router.get("/new", isSignedIn, (req, res) => {
 
 router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
   const stockId = req.query.id;
-  const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
+  const portfolio = await queries.getPortfolioById(req.params.portfolioId);
   if (stockId) {
     const userStock = portfolio.userStocks.id(stockId);
-    console.log("stock:", userStock);
     res.render("portfolio/remove", {
       removePortfolio: false,
       userStock: userStock,
       portfolio,
-    })
+    });
   } else {
     res.render("portfolio/remove", {
       removePortfolio: true,
@@ -84,19 +78,7 @@ router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
 });
 
 router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId)
-  .populate({
-    path: 'trades',
-    populate: { path: 'stock', model: 'Stock' }
-  });
-  portfolio.trades.forEach((trade) => {
-    trade.dateStr = trade.date.toLocaleDateString('en-us', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-  });
-  portfolio.trades.sort((a, b) => b.date - a.date);
+  const portfolio = await queries.getPortfolioAndTrades(req.params.portfolioId);
   const tradeAction = req.query.edit ? 'edit' : req.query.delete ? 'delete' : null;
   if (tradeAction) {
     const trade = portfolio.trades.find((trade) => {
@@ -108,147 +90,59 @@ router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
 });
 
 router.get("/:portfolioId/trades/new", isSignedIn, async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
+  const portfolio = await queries.getPortfolioById(req.params.portfolioId);
   res.render("portfolio/trades/new", { portfolio });
 });
 
 /* ------------------------ POST ROUTES -------------------------- */
 
 router.post("/", async (req, res) => {
-  const portfolio = await Portfolio.create({
-    userId: req.session.user._id,
-    name: req.body.name,
-    totalValue: 0,
-  });
-  const user = await User.findById(req.session.user._id);
-  user.portfolios.push(portfolio._id);
-  await user.save();
+  await queries.createPortfolio(req.session.user._id, req.body.name);
   res.redirect("/portfolio");
 });
 
 // TODO-ST: HANDLE COMMAS from the price or quantity (no 1,535 passed)
-// TODO-ST: quantity <= 0 should remove userStock from portfolio ? think*
+// TODO-ST: quantity <= 0 should remove userStock from portfolio ? think *
+// TODO-ST: handle user facing message for invalid trades of SELL & no existing stock
 
+// create a new trade
 router.post("/:portfolioId", async (req, res) => {
+  const portfolioId = req.params.portfolioId;
   const { type, symbol, date, quantity, price, notes } = req.body;
-  const tradeDate = new Date(date);
-  const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
-
-  let stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
-  console.log("DID WE FIND A STOCK?:", stock);
-  if (!stock) stock = await utils.createStockFromAPI(symbol);
-
-  const trades = await Trade.find({
-    $and: [{ stock: stock._id }, { portfolioId: portfolio._id }],
-  });
-  console.log("TRADES FOUND?:", trades);
-
-  if (type.toLowerCase() === "sell" && trades.length <= 0) {
-    // TODO-ST: handle user facing message
-    console.log(`This is an INVALID trade. TYPE = 'sell' but NO trades found.`);
-    return res.redirect(`/portfolio?id=${req.params.portfolioId}`);
-  }
-
-  const trade = await Trade.create({
-    type: type.toLowerCase(),
-    stock: stock._id,
-    date: tradeDate,
-    quantity: Number(quantity),
-    price: Number(price),
-    notes: notes || null,
-    portfolioId: portfolio._id,
-  });
-  console.log("NEW TRADE:", trade);
-
-  if (trades.length > 0) {
-    // check for BUY or SELL
-    await utils.handleTradeType(portfolio, trades, trade, stock);
-  } else {
-    const userStock = {
-      stock: stock._id,
-      costBasis: Number(price),
-      quantity: Number(quantity),
-      totalCost: Number(price) * Number(quantity),
-    };
-    portfolio.userStocks.push(userStock);
-  }
-  portfolio.trades.push(trade);
-  await portfolio.save();
-  await utils.updatePortfolioTotalValue(portfolio._id);
-  res.redirect(`/portfolio?id=${req.params.portfolioId}`);
+  await queries.createTrade(type, symbol, date, quantity, price, notes, portfolioId);
+  res.redirect(`/portfolio?id=${portfolioId}`);
 });
 
 /* ------------------------- PUT ROUTES ------------------------ */
 
 router.put("/:portfolioId", async (req, res) => {
-  await Portfolio.findByIdAndUpdate(req.params.portfolioId, { name: req.body.name });
+  await queries.updatePortfolio(req.params.portfolioId, req.body.name);
   res.redirect(`/portfolio?id=${req.params.portfolioId}`);
 });
 
 router.put("/:portfolioId/trades/:tradeId", async (req, res) => {
-  const date = new Date(req.body.date);
-  await Trade.findByIdAndUpdate(req.params.tradeId, {
-    date: date,
-    notes: req.body.notes,
-  });
+  await queries.updateTrade(req.params.tradeId, req.body.date, req.body.notes);
   res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
 });
 
 /* ----------------------- DELETE ROUTES ----------------------- */
 
 router.delete("/:portfolioId", async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
-  const user = await User.findById(portfolio.userId);
-  user.portfolios.pull(portfolio._id);
-  await user.save();
-  await Trade.deleteMany({ portfolioId: portfolio._id });
-  await portfolio.deleteOne();
+  await queries.deletePortfolio(req.params.portfolioId);
   res.redirect('/portfolio');
 });
 
+// Delete a trade
 router.delete("/:portfolioId/trades/:tradeId", async (req, res) => {
-  const trade = await Trade.findById(req.params.tradeId).populate('stock');
-  // recalculate shares, and cost basis (update userStock)
-  const tradeTotalCost = trade.price * trade.quantity;
-  const portfolio = await Portfolio.findById(req.params.portfolioId);
-  const userStock = portfolio.userStocks.find((u) => {
-    return u.stock.toString() === trade.stock._id.toString();
-  });
-  // userStock needs to recalc costBasis & subtract quantity, and totalCost
-  userStock.quantity = userStock.quantity - trade.quantity;
-  if (userStock.quantity > 0) {
-    userStock.totalCost = userStock.totalCost - tradeTotalCost;
-    userStock.costBasis = userStock.totalCost / userStock.quantity;
-    console.log(
-      'quantity:', userStock.quantity,
-      'totalCost:', userStock.totalCost,
-      'costBasis:', userStock.costBasis
-    );
-  } else {
-    portfolio.userStocks.pull(userStock._id);
-  }
-  portfolio.trades.pull(req.params.tradeId);
-  await trade.deleteOne();
-  await portfolio.save();
-  await utils.updatePortfolioTotalValue(portfolio._id);
+  await queries.deleteFromPortfolio(req.params.portfolioId, req.params.tradeId);
   res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
 });
 
 router.delete("/:portfolioId/stocks/:stockId", async (req, res) => {
-  const portfolio = await Portfolio.findById(req.params.portfolioId).populate("userStocks.stock");
-  const userStock = portfolio.userStocks.id(req.params.stockId);
-  const trades = await Trade.find({
-    $and: [{ stock: userStock.stock._id }, { portfolioId: portfolio._id }],
-  });
-  const tradesToRemove = trades.map(trade => trade._id);
-  portfolio.trades.forEach(trade => {
-    if (tradesToRemove.includes(trade)) portfolio.trades.pull(trade);
-  });
-  portfolio.userStocks.pull(userStock._id);
-  await portfolio.save();
-  await Trade.deleteMany({ $and: [{ stock: userStock.stock._id }, { portfolioId: portfolio._id }] });
-  await utils.updatePortfolioTotalValue(portfolio._id);
-  res.redirect(`/portfolio?id=${req.params.portfolioId}`);
+  const portfolioId = req.params.portfolioId;
+  await queries.deleteTradesByPortfolio(req.params.stockId, portfolioId);
+  await queries.updatePortfolioTotalValue(portfolioId);
+  res.redirect(`/portfolio?id=${portfolioId}`);
 });
 
 module.exports = router;

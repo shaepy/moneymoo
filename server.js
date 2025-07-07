@@ -14,10 +14,10 @@ const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
 const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js")
-const Stock = require("./models/stock.js");
 
 // * Middleware
 const utils = require("./utils/serverUtils.js");
+const api = require("./utils/apiUtils.js");
 const queries = require("./controllers/queries/queries.js");
 const userToView = require("./middleware/user-to-view.js");
 
@@ -61,30 +61,21 @@ app.use(userToView);
 app.use('/auth', authController);
 
 app.get('/', async (req, res) => {
-  // get user portfolios and watchlists
   if (req.session.user) {
-
     const portfolios = await queries.getUserPortfolios(req.session.user._id);
-    console.log('PORTFOLIOS:', portfolios);
     const watchlists = await queries.getUserWatchlists(req.session.user._id);
-    console.log('WATCHLISTS:', watchlists);
-
     const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
-    console.log('PORTFOLIOS SUM VALUE:', portfoliosSumValue);
-
     res.render("index", {
       portfolios: portfolios,
       watchlists: watchlists,
       portfoliosSumValue,
     });
-
   } else {
     res.render("index", {
       portfolios: null,
       watchlists: null,
     });
   }
-
 });
 
 app.use('/portfolio', portfolioRoutes);
@@ -97,15 +88,13 @@ app.listen(process.env.PORT, () => {
 });
 
 /* --------- FETCH STOCK PRICES --------- */
-// # Alpaca limits MAX of 200 calls/min
 
-cron.schedule("*/45 * * * *", async () => {
-  console.log("RUNNING A CRON JOB TO UPDATE STOCK PRICES. SET TO EVERY 45 MIN");
-  const stocks = await Stock.find();
-  console.log("STOCKS:", stocks);
+cron.schedule("*/55 * * * *", async () => {
+  console.log("RUNNING A CRON JOB TO UPDATE STOCK PRICES. SET TO EVERY 55 MIN");
+  const stocks = await queries.getDatabaseStocks();
   const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
-  const data = await utils.fetchPricesFromAPI(stockSymbols);
-  console.log("DATA IS:", data);
+  const data = await api.fetchPrices(stockSymbols);
+  console.log("DATA FROM API:", data);
 
   const newPrices = [];
   Object.keys(data.bars).forEach((key) => {
@@ -114,7 +103,7 @@ cron.schedule("*/45 * * * *", async () => {
   });
   console.log("NEW PRICES:", newPrices);
 
-  const bulkOps = newPrices.map((stock) => {
+  const bulkEdit = newPrices.map((stock) => {
     return {
       updateOne: {
         filter: { symbol: stock.symbol },
@@ -122,7 +111,6 @@ cron.schedule("*/45 * * * *", async () => {
       },
     };
   });
-  console.log("BULK OPS:", bulkOps);
-
-  await utils.updateStockPrices(bulkOps);
+  console.log("BULK EDIT:", bulkEdit);
+  await queries.updateStockPrices(bulkEdit);
 });

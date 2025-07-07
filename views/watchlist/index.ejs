@@ -22,7 +22,7 @@
                 <h2 class="is-size-4 mb-3">Overview</h2>
                     <div class="is-flex is-flex-direction-column is-gap-1">
                     <% watchlists.forEach(list => { %>
-                    <a class="button is-link is-outlined is-small" style="max-width: 200px;" href="/watchlist?id=<%= list._id %>">
+                    <a class="button is-link is-outlined is-small" style="max-width: 180px;" href="/watchlist?id=<%= list._id %>">
                         <p><%= list.name %></p>
                     </a>
                     <% }); %>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="is-flex is-flex-direction-column is-gap-1 mt-5">
                     <% watchlists.forEach(list => { %>
-                    <a class="button is-link is-outlined is-small" style="max-width: 200px;" href="/watchlist?id=<%= list._id %>">
+                    <a class="button is-link is-outlined is-small" style="max-width: 180px;" href="/watchlist?id=<%= list._id %>">
                         <p><%= list.name %></p>
                     </a>
                     <% }); %>
@@ -90,6 +90,9 @@
             </div>
             <div class="column">
                 <section class="ml-1 mr-6 mt-6">
+                    <% if (activeWatchlist.stocks.length <= 0) { %>
+                    <p class="ml-5 mr-5 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist.</p>
+                    <% } else { %>
                     <table class="table is-hoverable is-fullwidth">
                         <thead>
                             <tr>
@@ -125,6 +128,7 @@
                         <% }) %>
                         </tbody>
                     </table>
+                    <% } %>
                 </section>
             </div>
         </div>
