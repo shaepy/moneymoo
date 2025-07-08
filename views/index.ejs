@@ -6,10 +6,9 @@
     <%- include('partials/_navbar') %>
     <h1 class="is-size-2 has-text-centered mt-6 mb-4">Welcome back, <%= user.username %></h1>
     <div class="is-flex is-flex-direction-row is-justify-content-center is-gap-2 is-flex-wrap-wrap">
-
       <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
         <p class="is-size-4 mb-2" style="min-width: 345px;">Portfolios</p>
-        <% if (portfolios) { %>
+        <% if (portfolios.length > 0) { %>
           <table class="table">
             <tbody>
             <% portfolios.forEach(portfolio => { %>
@@ -30,7 +29,7 @@
 
       <div class="box has-text-centered m-3 is-flex is-flex-direction-column is-gap-1 is-align-items-center">
         <p class="is-size-4 mb-2" style="min-width: 345px;">Watchlists</p>
-        <% if (watchlists) { %>
+        <% if (watchlists.length > 0) { %>
           <table class="table">
             <tbody>
             <% watchlists.forEach(watchlist => { %>

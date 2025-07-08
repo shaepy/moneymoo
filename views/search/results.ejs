@@ -9,7 +9,7 @@
     <div class="m-6 is-flex is-flex-direction-row is-flex-wrap-wrap is-gap-5 is-justify-content-center">
         <% results.forEach((result) => { %>
         <div class="box is-flex is-flex-direction-column is-gap-2 is-align-items-center mb-1" style="width: 225px;">
-            <p class="button is-link is-light" style="max-width: 100px;"><a href="/stock/<%= result.symbol %>"><%= result.symbol %></a></p>
+            <a href="/stock/<%= result.symbol %>"><p class="button is-link is-inverted is-large" style="max-width: 100px;"><%= result.symbol %></p></a>
             <div class="has-text-centered is-flex-direction-column">
                 <p class="is-size-7"><strong>NAME</strong></p>
                 <p><%= result.name %></p>

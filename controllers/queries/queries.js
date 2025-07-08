@@ -34,6 +34,7 @@ const createTrade = async (type, symbol, date, quantity, price, notes, portfolio
   const stock = await findOrCreateStock(symbol);
   const trades = await getTradesByPortfolioStock(stock._id, portfolio._id);
   const tradeDate = new Date(date);
+  
   if (type.toLowerCase() === "sell" && trades.length <= 0) {
     console.log(`This is an INVALID trade. TYPE = 'sell' but NO trades found.`);
     return;
@@ -50,7 +51,6 @@ const createTrade = async (type, symbol, date, quantity, price, notes, portfolio
   console.log("NEW TRADE CREATED:", trade);
 
   if (trades.length > 0) {
-    // check for BUY or SELL
     await utils.handleTradeType(portfolio, trades, trade, stock);
   } else {
     const userStock = {
@@ -71,6 +71,7 @@ const createWatchlist = async (userId, name) => {
   const user = await getUserById(userId);
   user.watchlists.push(watchlist);
   await user.save();
+  return watchlist;
 };
 
 const addToWatchlist = async (formData, stockId, userId) => {
@@ -141,13 +142,19 @@ const deleteFromPortfolio = async (portfolioId, tradeId) => {
   const userStock = portfolio.userStocks.find((u) => {
     return u.stock._id.toString() === trade.stock._id.toString();
   });
-  // userStock needs to recalc costBasis & subtract quantity, and totalCost
-  userStock.quantity = userStock.quantity - trade.quantity;
-  if (userStock.quantity > 0) {
-    userStock.totalCost = userStock.totalCost - tradeTotalCost;
+
+  if (trade.type.toLowerCase() === "buy") {
+    userStock.quantity = userStock.quantity - trade.quantity;
+    if (userStock.quantity > 0) {
+      userStock.totalCost = userStock.totalCost - tradeTotalCost;
+      userStock.costBasis = userStock.totalCost / userStock.quantity;
+    } else {
+      portfolio.userStocks.pull(userStock._id);
+    }
+  } else { 
+    userStock.quantity = userStock.quantity + trade.quantity;
+    userStock.totalCost = userStock.totalCost + tradeTotalCost;
     userStock.costBasis = userStock.totalCost / userStock.quantity;
-  } else {
-    portfolio.userStocks.pull(userStock._id);
   }
   portfolio.trades.pull(tradeId);
   await trade.deleteOne();

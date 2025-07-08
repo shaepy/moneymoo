@@ -64,8 +64,8 @@ router.get("/:watchlistId/remove", isSignedIn, async (req, res) => {
 /* ------------------------ POST ROUTES -------------------------- */
 
 router.post('/', async (req, res) => {
-  await queries.createWatchlist(req.session.user._id, req.body.name);  
-  res.redirect('/watchlist');
+  const watchlist = await queries.createWatchlist(req.session.user._id, req.body.name);  
+  res.redirect(`/watchlist?id=${watchlist._id}`);
 });
 
 router.post('/add/:stockId', async (req, res) => {
