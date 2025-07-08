@@ -118,11 +118,11 @@
                             <td><%= (stock.change).toFixed(2) %></td>
                             <td><%= (stock.changePercentage).toFixed(2) %></td>
                             <% if (activeWatchlist.edit) {%>
-                                <td>
-                                    <form action="/watchlist/<%= activeWatchlist._id %>/remove?id=<%= stock._id %>&_method=PUT" method="POST">
-                                        <button class="delete" type="submit"></button>
-                                    </form>
-                                </td>
+                            <td>
+                                <form action="/watchlist/<%= activeWatchlist._id %>/remove?id=<%= stock._id %>&_method=PUT" method="POST">
+                                    <button class="delete" type="submit"></button>
+                                </form>
+                            </td>
                             <% } %>
                         </tr>
                         <% }) %>

@@ -47,7 +47,7 @@
                     <% if (trade.delete) { %>
                     <td>
                         <form action="/portfolio/<%= portfolio._id %>/trades/<%= trade._id %>?_method=DELETE" method="POST">
-                            <button type="submit" class="button is-light is-danger">delete</button>
+                            <button type="submit" class="delete"></button>
                         </form>
                     </td>
                     <% } else { %>

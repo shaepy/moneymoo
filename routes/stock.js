@@ -9,8 +9,12 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:stockSymbol", async (req, res) => {
-  const profile = await api.fetchStockProfile(req.params.stockSymbol);
+  let profile = await api.fetchStockProfile(req.params.stockSymbol);
   const metrics = await api.fetchFinancials(req.params.stockSymbol);
+
+  profile.marketCap = profile.marketCap.toLocaleString();
+  profile.volume = profile.volume.toLocaleString();
+  profile.averageVolume = profile.averageVolume.toLocaleString();
 
   if (!metrics)
     return res.render(`stock/show`, { stock: profile, financials: null });
