@@ -17,7 +17,6 @@ router.get("/results", (req, res) => {
 
 /* ------------------------- POST ROUTES ------------------------- */
 
-// returns from search input
 router.post("/", async (req, res) => {
   const results = await api.fetchResults(req.body.symbol);
   const validResults = results.filter((result) => {

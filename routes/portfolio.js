@@ -1,7 +1,5 @@
 const express = require("express");
 const isSignedIn = require("../middleware/is-signed-in.js");
-const Portfolio = require("../models/portfolio.js");
-const Trade = require("../models/trade.js");
 const router = express.Router();
 const utils = require("../utils/serverUtils.js");
 const queries = require("../controllers/queries/queries.js");

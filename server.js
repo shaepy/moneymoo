@@ -87,22 +87,19 @@ app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
 });
 
-/* --------- FETCH STOCK PRICES --------- */
+/* --------- CRON JOB / STOCK PRICES --------- */
 
 cron.schedule("*/55 * * * *", async () => {
-  console.log("RUNNING A CRON JOB TO UPDATE STOCK PRICES. SET TO EVERY 55 MIN");
+  console.log("CRON RUNNING TO UPDATE STOCK PRICES. SET TO EVERY 55 MIN");
   const stocks = await queries.getDatabaseStocks();
   const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
   const data = await api.fetchPrices(stockSymbols);
-  console.log("DATA FROM API:", data);
-
   const newPrices = [];
   Object.keys(data.bars).forEach((key) => {
     const newObj = { symbol: key, price: data.bars[key].c };
     newPrices.push(newObj);
   });
   console.log("NEW PRICES:", newPrices);
-
   const bulkEdit = newPrices.map((stock) => {
     return {
       updateOne: {
