@@ -1,9 +1,9 @@
-# Project 2: moneymoo
+# moneymoo
 
 ## Project Overview
 For the second unit of General Assembly's Software Engineering course, we were tasked with developing a full-stack app from scratch using the MEN (MongoDB, Express, and Node.js) framework.
 
-My project idea is "moneymoo", a stock tracker app that allows users to manage their investment portfolios, track trade history, and view unrealized gains and losses. Users can search for real-time stock prices, access company financial data, and easily add stocks to their watchlist for quick reference. This app integrates stock market APIs to provide accurate and up-to-date information for investors and traders alike.
+My project is "moneymoo", a stock tracker app that allows users to manage their investment portfolios, track trade history, and view unrealized gains and losses. Users can search for real-time stock prices, access company financial data, and easily add stocks to their watchlist for quick reference. This app integrates stock market APIs to provide accurate and up-to-date information for investors and traders alike.
 
 ### Deployment Link
 - Link TBD
@@ -28,7 +28,7 @@ Solo contribution with a duration of 1 week for completion for MVP.
 - [Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs/stable)
 - [Finnhub](https://finnhub.io/docs/api)
 
-## Brief
+## Requirements
 - Build a full-stack application by making your own backend and your own front-end
 - Use an Express API to serve your data from a Mongo database
 - Multiple relationships and CRUD functionality for at least a couple of models
@@ -36,9 +36,9 @@ Solo contribution with a duration of 1 week for completion for MVP.
 - Have a user-friendly design
 
 ## Planning
+My project management was done through Notion, utilizing a Kanban board for development. MVP stories were turned into tasks on the board, with any bugs or additional tickets being added to the backlog during the development phase.
 - [Link to Full Project Plan ](https://www.notion.so/Unit-2-moneymoo-CRUD-app-21a7ed1fdd5880278eb5dc9129f1ff62?source=copy_link)
 - [Project Kanban Board](https://www.notion.so/21b7ed1fdd5880899ec9ec812a6dedce?v=21b7ed1fdd58814f943b000cfff17172&source=copy_link)
-
 
 ### MVP User Stories
 As a user,
@@ -54,25 +54,20 @@ As a user,
 - I want to view each stock profile so I may browse the company details and any financial data.
 - I want to add stocks to a watchlist so I may monitor their performance and quickly access their profiles.
 
-### Stretch Goals
-As a user,
-- I want to browse popular stocks so I may view their profiles or add them to my watchlist.
-- I want to see my realized profit/loss history based on my trades, for each stock I own(ed).
-- I want to see daily chart history for portfolio account values so I may know how my portfolios are performing.
-- I want to see an allocation visual for stocks in my portfolio(s), divided by their industries or sectors.
-
 ### Entity Relationship Diagram - ERD
-After writing my MVP user stories, I focused on designing the data structure and determining the database relationships for my app. We were instructed to incorporate both reference and embedded subdocument relationships, which influenced how I structured the models. The User model includes arrays for portfolios and watchlists, holding references to portfolioIds and watchlistIds, respectively. I chose to create separate models for Stock and Trade: Stock is referenced in multiple places (like portfolios and watchlists), ensuring a single source of truth, while Trade is a model to handle the large volume of trades each user may have, referencing both portfolioId and userId for easy querying. Portfolios and watchlists are also models, as a user can have many of each, with portfolios containing trade references and embedded userStocks, which reference individual stocks but also store portfolio-specific data.
+After writing my MVP user stories, I focused on the data structure and determining the database relationships for my app. We were instructed to incorporate both reference and embedded subdocument relationships, which influenced how I structured the models. The User model includes arrays for portfolios and watchlists, holding references to portfolioIds and watchlistIds. 
+
+I chose to create separate models for Stock and Trade: Stock is referenced in multiple places (like portfolios and watchlists), ensuring a single source of truth. Whereas Trade is a model to handle the large volume of trades each user may have, referencing both portfolioId and userId for easy querying. Portfolios and watchlists are also models, as a user can have many of each, with portfolios containing trade references and embedded userStocks, which reference individual stocks but also store portfolio-specific data.
 
 <img src="https://github.com/user-attachments/assets/87d10641-a80a-4052-918c-af9c77573639" alt="entity relationship diagram" width="740"/>
 
 ### Researched APIs 
-During the planning phase of this project, I researched several external APIs to integrate into the app, evaluating their pricing options and call limits. I preferred free services but decided to pay for a single month's subscription to Financial Modeling Prep to test with higher API limits, which helped during the development phase. I used [Alpaca Markets](https://docs.alpaca.markets/reference/stockbars) for real-time stock data and bar charts, [Finnhub](https://finnhub.io/docs/api) for financial metrics such as P/E ratios and earnings per share, and [Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs/stable) for detailed stock information and company profiles. Each API had its own rate limits: Alpaca at 200 calls per minute, Finnhub at 60 calls per minute, and Financial Modeling Prep with a daily limit of 250 calls, temporarily increasing to 300 calls per minute for testing.
+During the planning phase, I researched several external APIs to integrate into the app by evaluating their pricing options and call limits. I preferred free services but decided to pay for a single month's subscription to Financial Modeling Prep to test with higher API limits. I used [Alpaca Markets](https://docs.alpaca.markets/reference/stockbars) for real-time stock data and bar charts, [Finnhub](https://finnhub.io/docs/api) for financial metrics such as P/E ratios and earnings per share, and [Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs/stable) for detailed stock information and company profiles.
 
-Utilizing Postman, I tested responses from the APIs to see the JSON data. This helped solidify my ERD before beginning development as I knew what data values to expect.
+Utilizing Postman, I tested responses from the APIs to view the JSON data. This helped solidify my ERD before beginning development as I knew what data values to expect.
 
 ### Wireframes
-To better visualize the app’s user interface, I drafted wireframes for key pages to outline the layout and functionality. My inspiration came from CoinMarketCap's portfolio and watchlist design, especially their clean CTAs and organized data presentation. Additionally, I looked at other financial websites like Schwab.com for their layout and user experience, incorporating elements that felt intuitive and accessible to users managing their portfolios and stock data.
+To better visualize the app’s interface, I drafted a few wireframes for key pages to outline the layout and functionality. My inspiration came from CoinMarketCap's portfolio and watchlist design, especially their clean CTAs and organized data presentation. Additionally, I looked at other financial websites like schwab.com for their layout and user experience, incorporating elements that felt intuitive and accessible to users managing their portfolios and stock data.
 
 <img src="https://github.com/user-attachments/assets/cc682a91-104f-4363-8280-41827e0a16e7" alt="moneymoo wireframe" width="740"/>
 
@@ -109,3 +104,10 @@ There are known bugs and edge cases that need to be considered and implemented p
 - Add charts to stock pages and portfolios
 - Show profit/loss history for trades and stocks
 - Search for a stock by company name
+
+### Stretch Goals
+These were stretch goals set during the MVP phase. As a user,
+- I want to browse popular stocks so I may view their profiles or add them to my watchlist.
+- I want to see my realized profit/loss history based on my trades, for each stock I own(ed).
+- I want to see daily chart history for portfolio account values so I may know how my portfolios are performing.
+- I want to see an allocation visual for stocks in my portfolio(s), divided by their industries or sectors.

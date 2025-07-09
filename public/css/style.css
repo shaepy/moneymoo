@@ -30,3 +30,7 @@ nav.navbar {
 div.button.is-link.is-outlined {
     max-width: 200px;
 }
+
+h1.is-size-2 {
+    font-weight: 600;
+}

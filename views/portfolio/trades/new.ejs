@@ -5,8 +5,8 @@
     <%- include('../../partials/_navbar') %>
     <p class="ml-6 mr-5 mt-5 mb-3"><a href="/portfolio?id=<%= portfolio._id %>">Back to Portfolio</a></p>
     <div class="ml-6 mr-6 mt-4 mb-4 is-flex is-flex-direction-column is-gap-3">
-        <h1 class="is-size-3 has-text-centered">Add a Trade</h1>
-        <div class="container" style="max-width: 500px;">
+        <h1 class="is-size-3 has-text-centered" style="font-weight: 600;">Add a Trade</h1>
+        <div class="container" style="max-width: 450px;">
             <form action="/portfolio/<%= portfolio._id %>" method="POST" class="box">
                 <div class="field">
                     <label for="type" class="label">Trade:</label>
