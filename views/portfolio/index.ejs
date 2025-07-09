@@ -59,8 +59,8 @@
                         <td>$<%= Number(userStock.marketValue).toLocaleString() %></td>
                         <td>$<%= Number(userStock.totalCost.toFixed(2)).toLocaleString() %></td>
                         <td>$<%= Number(userStock.costBasis.toFixed(2)).toLocaleString() %></td>
-                        <td><%= Number(userStock.unrealizedPL).toLocaleString() %></td>
-                        <td><%= userStock.unrealizedPLPercent %></td>
+                        <td class="unrealized-pl-data"><%= Number(userStock.unrealizedPL).toLocaleString() %></td>
+                        <td class="unrealized-pl-data"><%= userStock.unrealizedPLPercent %></td>
                     </tr>
                 <% }) %>
                 </tbody>
@@ -148,8 +148,8 @@
                             <td>$<%= Number(userStock.marketValue).toLocaleString() %></td>
                             <td>$<%= (userStock.totalCost).toLocaleString() %></td>
                             <td>$<%= Number(userStock.costBasis.toFixed(2)).toLocaleString() %></td>
-                            <td><%= Number(userStock.unrealizedPL).toLocaleString() %></td>
-                            <td><%= userStock.unrealizedPLPercent %></td>
+                            <td class="unrealized-pl-data"><%= Number(userStock.unrealizedPL).toLocaleString() %></td>
+                            <td class="unrealized-pl-data"><%= userStock.unrealizedPLPercent %></td>
                             <% if (activePortfolio.edit) {%>
                             <td>
                                 <a href="/portfolio/<%= activePortfolio._id %>/remove?id=<%= userStock._id %>" class="button is-light is-danger is-small">remove</a>

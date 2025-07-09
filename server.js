@@ -90,8 +90,8 @@ app.listen(process.env.PORT, () => {
 
 /* --------- CRON JOB / STOCK PRICES --------- */
 
-cron.schedule("*/30 * * * *", async () => {
-  console.log("CRON RUNNING TO UPDATE STOCK PRICES. SET TO EVERY 30 MIN");
+cron.schedule("*/55 * * * *", async () => {
+  console.log("CRON RUNNING TO UPDATE STOCK PRICES. SET TO EVERY 55 MIN");
   const stocks = await queries.getDatabaseStocks();
   const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
   const data = await api.fetchPrices(stockSymbols);

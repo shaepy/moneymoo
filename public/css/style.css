@@ -38,3 +38,11 @@ h1.is-size-2 {
 h2.browse.is-size-6 {
     font-weight: 600;
 }
+
+td.unrealized-pl-profit-color {
+    color: rgb(27, 199, 127);
+}
+
+td.unrealized-pl-loss-color { 
+    color: red;
+}

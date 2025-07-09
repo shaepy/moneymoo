@@ -7,3 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
     navbarMenu.classList.toggle("is-active");
   });
 });
+
+const unrealizedPLData = document.querySelectorAll(".unrealized-pl-data");
+
+unrealizedPLData.forEach(data => {
+  const number = parseFloat(data.textContent.replace(/,/g, ''));
+  if (number > 0) {
+    data.classList.add("unrealized-pl-profit-color");
+  } else if (number < 0) {
+    data.classList.add("unrealized-pl-loss-color");
+  }
+});

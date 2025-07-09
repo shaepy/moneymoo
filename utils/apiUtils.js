@@ -15,7 +15,11 @@ async function fetchActiveStocksByVolume(num) {
       `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=${num}`, 
       options
     );
-    return await response.json();
+    const results = await response.json();
+    const validResults = results["most_actives"].filter((result) => {
+      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+    });
+  return validResults;
   } catch (err) {
     console.error("Failed to fetch active stocks by volume", err);
   }
@@ -27,7 +31,11 @@ async function fetchActiveStocksByTrades(num) {
       `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=trades&top=${num}`, 
       options
     );
-    return await response.json();
+    const results = await response.json();
+    const validResults = results["most_actives"].filter((result) => {
+      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+    });
+  return validResults;
   } catch (err) {
     console.error("Failed to fetch active stocks by trades", err);
   }
@@ -39,7 +47,11 @@ async function fetchTopMarketMovers(num) {
       `https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=${num}`, 
       options
     );
-    return await response.json();
+    const results = await response.json();
+    const validResults = results.gainers.filter((result) => {
+      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+    });
+  return validResults;
   } catch (err) {
     console.error("Failed to fetch top market movers", err);
   }
