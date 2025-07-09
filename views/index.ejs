@@ -19,7 +19,6 @@
             <% }); %>
             </tbody>
           </table>
-          <!-- <p class="is-size-5">$<%= portfoliosSumValue %></p> -->
         <% } %>
       <div class="ml-2 mr-2 mb-2 is-flex is-flex-direction-column is-gap-1">
         <p><a href="/portfolio" class="button is-link is-outlined">Go to Portfolios</a></p>
@@ -46,14 +45,20 @@
         </div>
       </div>
     </div>
+
   <% } else { %>
-    <div class="is-flex is-flex-direction-column is-justify-content-center is-max-tablet">
-      <h1 class="is-size-2 has-text-centered mt-6">Welcome to moneymoo</h1>
-      <p class="is-size-5 has-text-centered mt-2">let's start milking your gains</p>
+    <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-max-tablet is-gap-1">
+      <h1 class="is-size-1 title has-text-centered mt-6 mb-3">moneymoo</h1>
+      <p class="is-size-4 mb-1 has-text-centered">Let's start milking your gains</p>
       <div class="mt-4 is-flex is-flex-direction-row is-justify-content-center is-gap-2">
-        <a href="/auth/sign-up" class="button is-link">Sign Up</a>
-        <a href="/auth/sign-in" class="button is-link">Log In</a>
+        <a href="/auth/sign-up" class="button is-link is-outlined is-medium">Sign Up</a>
+        <a href="/auth/sign-in" class="button is-link is-medium">Log In</a>
       </div>
+      <form action="/search" method="POST" class="mt-6 is-justify-content-center p-5 is-gap-2 is-flex is-flex-direction-row box is-align-items-center">
+          <label for="symbol" class="label is-size-6 mb-0">Symbol</label>
+          <input type="text" name="symbol" id="symbol" class="input is-normal" required placeholder="GOOG"/>
+          <button type="submit" class="button is-link">Search</button>
+      </form>
     </div>
   <% } %>
 </body>

@@ -66,7 +66,7 @@
 
     <% if (activeWatchlist) { %>
         <div class="columns">
-            <div class="column is-one-fifth ml-6 mr-5">
+            <div class="column is-one-fifth ml-6">
                 <p class="mr-5 mt-5 mb-5"><a href="/watchlist">Back to Watchlists</a></p>
                 <% if (activeWatchlist.edit) { %>
                 <form action="/watchlist/<%= activeWatchlist._id %>?_method=PUT" method="POST" class="ml-1 mr-5 mt-2 mb-2">
@@ -76,7 +76,7 @@
                 <% } else { %>
                 <h1 class="is-size-3 mb-1 mr-1"><%= activeWatchlist.name %></h1>
                 <% } %>
-                <div class="mr-4 mb-5">
+                <div class="mb-5">
                     <a href="/watchlist?id=<%= activeWatchlist._id %>&edit=true">edit</a> |
                     <a href="/watchlist/<%= activeWatchlist._id %>/remove">remove</a>
                 </div>
@@ -88,9 +88,9 @@
                     <% }); %>
                 </div>
             </div>
-            <div class="column ml-1 mr-6 mt-6">
+            <div class="column ml-0 mr-6 mt-6">
                 <% if (activeWatchlist.stocks.length <= 0) { %>
-                <p class="ml-6 mr-5 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist.</p>
+                <p class="ml-0 mr-6 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist.</p>
                 <% } else { %>
                 <table class="table is-hoverable is-fullwidth">
                     <thead>

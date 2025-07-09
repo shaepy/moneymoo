@@ -10,7 +10,7 @@
                 <div>
                     <h1 class="is-size-4"><%= stock.symbol %> • <%= stock.exchange %></h1>
                     <h2 class="is-size-3"><%= stock.companyName %></h2>
-                    <h2 class="is-size-2">$<%= (stock.price).toFixed(2) %></h2>
+                    <h2 class="is-size-1">$<%= (stock.price).toFixed(2) %></h2>
                 </div>
             </div>
             <p><a href="/watchlist/add?symbol=<%= stock.symbol %>" class="button is-link mt-3">+ Add to Watchlist</a></p>

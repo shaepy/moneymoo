@@ -1,5 +1,25 @@
 const Stock = require("../models/stock.js");
 
+async function fetchSearchResults(symbol) {
+  try { 
+    const response = await fetch(
+      `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${process.env.FMP_APIKEY}`
+    );
+    console.log('API RESPONSE BEFORE JSON:', response);
+    const results = await response.json();
+    const validResults = results.filter((result) => {
+      return (
+        result.exchange !== "OTC" &&
+        result.exchange !== "CRYPTO" &&
+        !result.symbol.includes(".")
+      );
+    });
+  return validResults;
+  } catch (err) {
+    console.error("Failed to fetch search results", err);
+  }
+};
+
 async function fetchPrices(symbols) {
   const options = {
     method: "GET",
@@ -56,19 +76,10 @@ const fetchStockProfile = async (symbol) => {
   }
 };
 
-const fetchResults = async (symbol) => {
-  const response = await fetch(
-    `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${process.env.FMP_APIKEY}`
-  );
-  if (!response.ok) throw new Error("Failed to fetch stock search results");
-  console.log('API RESONSE BEFORE JSON:', response);
-  return await response.json();
-};
-
 module.exports = {
   fetchPrices,
   fetchFinancials,
   fetchStockProfile,
   fetchAndCreateStock,
-  fetchResults,
+  fetchSearchResults,
 };

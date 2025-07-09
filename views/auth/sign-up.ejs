@@ -3,7 +3,7 @@
 </head>
 <body>
     <%- include('../partials/_navbar') %>
-        <h1 class="is-size-3 ml-6 mr-6 mt-4 mb-4 has-text-centered">Sign Up</h1>
+        <h1 class="is-size-3 ml-6 mr-6 mt-6 mb-4 has-text-centered">Create a New Account</h1>
         <% if (userExists) { %>
         <p class="is-size-6 ml-6 mr-6 mt-4 mb-4 has-text-centered"><a href="/auth/sign-in">Log In</a> to your account</p>
         <% } %>
@@ -29,7 +29,8 @@
                     <label for="confirmPassword" class="label">Confirm Password</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" required class="input is-normal" />
                 </div>
-                <button type="submit" class="button is-link">Create an account</button>
+                <button type="submit" class="button is-link mt-3 mb-5" style="width: 100%;">Sign Up</button>
+                <p class="has-text-centered">Already have an account? <a href="/auth/sign-in">Log In</a></p>
             </form>
         </div>
 </body>

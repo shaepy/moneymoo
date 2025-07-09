@@ -18,15 +18,7 @@ router.get("/results", (req, res) => {
 /* ------------------------- POST ROUTES ------------------------- */
 
 router.post("/", async (req, res) => {
-  const results = await api.fetchResults(req.body.symbol);
-  const validResults = results.filter((result) => {
-    return (
-      result.exchange !== "OTC" &&
-      result.exchange !== "CRYPTO" &&
-      !result.symbol.includes(".")
-    );
-  });
-  req.session.searchResults = validResults;
+  req.session.searchResults = await api.fetchSearchResults(req.body.symbol);
   res.redirect("/search/results");
 });
 

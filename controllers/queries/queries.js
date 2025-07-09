@@ -4,7 +4,7 @@ const User = require("../../models/user.js");
 const Trade = require("../../models/trade.js");
 const Stock = require("../../models/stock.js");
 const api = require("../../utils/apiUtils.js");
-const utils = require("../../utils/serverUtils.js")
+const utils = require("../../utils/serverUtils.js");
 
 const getUserPortfolios = async (userId) => {
     const userPortfolios = await Portfolio.find({ userId: userId }).populate("userStocks.stock");

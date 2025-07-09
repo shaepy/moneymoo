@@ -8,15 +8,14 @@ const mongoose = require("mongoose");
 const cron = require("node-cron");
 const path = require("path");
 
-// * Models
+// * Routes
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
 const stockRoutes = require("./routes/stock.js");
-const authController = require("./controllers/auth.js")
+const authController = require("./controllers/auth.js");
 
 // * Middleware
-const utils = require("./utils/serverUtils.js");
 const api = require("./utils/apiUtils.js");
 const queries = require("./controllers/queries/queries.js");
 const userToView = require("./middleware/user-to-view.js");
@@ -64,11 +63,11 @@ app.get('/', async (req, res) => {
   if (req.session.user) {
     const portfolios = await queries.getUserPortfolios(req.session.user._id);
     const watchlists = await queries.getUserWatchlists(req.session.user._id);
-    const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
+    // const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
     res.render("index", {
       portfolios: portfolios,
       watchlists: watchlists,
-      portfoliosSumValue,
+      // portfoliosSumValue,
     });
   } else {
     res.render("index", {
