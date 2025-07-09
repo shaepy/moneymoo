@@ -1,0 +1,45 @@
+<%- include('../partials/_header') %>
+<title>Browse</title>
+</head>
+<body>
+    <%- include('../partials/_navbar') %>
+    <div class="is-flex is-flex-direction-column is-align-items-center">
+        <div class="ml-6 mr-6 mt-6">
+            <h1 class="is-size-3 mb-4 has-text-centered" style="font-weight: 600;">Browse the Market</h1>
+            <div class="container" style="width: 400px;">
+                <form action="/search" method="POST" class="box">
+                    <div class="field">
+                        <label for="symbol" class="label">Ticker</label>
+                        <input type="text" name="symbol" id="symbol" class="input is-normal" required placeholder="GOOG"/>
+                    </div>
+                    <button type="submit" class="button is-link mt-2" style="width: 100%;">Search</button>
+                </form>
+            </div>
+        </div>
+        <div class="box is-flex is-flex-direction-column is-align-items-center m-6 is-gap-3">
+            <div class="tabs is-toggle is-fullwidth">
+                <ul>
+                    <li><a href="/browse?view=active-by-volume">Active by Volume</a></li>
+                    <li><a href="/browse?view=active-by-trades">Active by Trades</a></li>
+                    <li><a href="/browse?view=top-market-movers">Top Market Movers</a></li>
+                </ul>
+            </div>
+            <% if (activeByVolume) { %>
+            <div class="m-0">
+                <h2 class="is-size-6 has-text-centered browse">Most Active by Volume</h2>
+            </div>
+            <% } %>
+            <% if (activeByTrades) { %>
+            <div class="m-0">
+                <h2 class="is-size-6 has-text-centered browse">Most Active by Trades</h2>
+            </div>
+            <% } %>
+            <% if (topMarketMovers) { %>
+            <div class="m-0">
+                <h2 class="is-size-6 has-text-centered browse">Top Market Movers</h2>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

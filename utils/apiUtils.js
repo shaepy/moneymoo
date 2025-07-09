@@ -1,5 +1,50 @@
 const Stock = require("../models/stock.js");
 
+const options = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    "APCA-API-KEY-ID": `${process.env.APCA_API_KEY_ID}`,
+    "APCA-API-SECRET-KEY": `${process.env.APCA_API_SECRET_KEY}`,
+  },
+};
+
+async function fetchActiveStocksByVolume(num) {
+  try {
+    const response = await fetch(
+      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=${num}`, 
+      options
+    );
+    return await response.json();
+  } catch (err) {
+    console.error("Failed to fetch active stocks by volume", err);
+  }
+};
+
+async function fetchActiveStocksByTrades(num) {
+  try {
+    const response = await fetch(
+      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=trades&top=${num}`, 
+      options
+    );
+    return await response.json();
+  } catch (err) {
+    console.error("Failed to fetch active stocks by trades", err);
+  }
+};
+
+async function fetchTopMarketMovers(num) {
+  try {
+    const response = await fetch(
+      `https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=${num}`, 
+      options
+    );
+    return await response.json();
+  } catch (err) {
+    console.error("Failed to fetch top market movers", err);
+  }
+};
+
 async function fetchSearchResults(symbol) {
   try { 
     const response = await fetch(
@@ -21,14 +66,6 @@ async function fetchSearchResults(symbol) {
 };
 
 async function fetchPrices(symbols) {
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      "APCA-API-KEY-ID": `${process.env.APCA_API_KEY_ID}`,
-      "APCA-API-SECRET-KEY": `${process.env.APCA_API_SECRET_KEY}`,
-    },
-  };
   try {
     const response = await fetch(
       `https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbols}`, 
@@ -82,4 +119,7 @@ module.exports = {
   fetchStockProfile,
   fetchAndCreateStock,
   fetchSearchResults,
+  fetchActiveStocksByVolume,
+  fetchActiveStocksByTrades,
+  fetchTopMarketMovers,
 };

@@ -5,7 +5,7 @@ const api = require("../utils/apiUtils.js");
 /* ------------------------- GET ROUTES -------------------------- */
 
 router.get("/", (req, res) => {
-  res.render("search/index");
+  res.render("browse/index");
 });
 
 router.get("/results", (req, res) => {

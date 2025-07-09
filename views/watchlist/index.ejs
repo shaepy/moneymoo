@@ -90,7 +90,7 @@
             </div>
             <div class="column ml-0 mr-6 mt-6">
                 <% if (activeWatchlist.stocks.length <= 0) { %>
-                <p class="ml-0 mr-6 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist.</p>
+                <p class="ml-0 mr-6 mt-3"><a href="/browse">Browse</a> for stocks and add to your watchlist.</p>
                 <% } else { %>
                 <table class="table is-hoverable is-fullwidth">
                     <thead>
@@ -133,7 +133,7 @@
     <% } %>
 
     <% if (!stocks && !activeWatchlist) { %>
-    <p class="ml-6 mr-5 mt-3"><a href="/search">Search</a> for stocks and add to your watchlist(s).</p>
+    <p class="ml-6 mr-5 mt-3"><a href="/browse">Browse</a> for stocks and add to your watchlist(s).</p>
     <% } %>
 </body>
 </html>

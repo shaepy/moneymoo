@@ -12,6 +12,7 @@ const path = require("path");
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
+const browseRoutes = require("./routes/browse.js");
 const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js");
 
@@ -80,6 +81,7 @@ app.get('/', async (req, res) => {
 app.use('/portfolio', portfolioRoutes);
 app.use('/watchlist', watchlistRoutes);
 app.use('/search', searchRoutes);
+app.use('/browse', browseRoutes);
 app.use('/stock', stockRoutes);
 
 app.listen(process.env.PORT, () => {
