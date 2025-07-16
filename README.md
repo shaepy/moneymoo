@@ -8,7 +8,12 @@ My project is "moneymoo", a stock tracker app that allows users to manage their 
 ### Deployment Link
 - Link TBD
 
-<img width="750" alt="screenshot of portfolio page" src="https://github.com/user-attachments/assets/7c20154d-73a4-49d7-ba1c-e534cd179412" />
+<img width="600" alt="anon homepage" src="https://github.com/user-attachments/assets/5cbfa280-cf8f-430f-ba78-ad25922d68ca" />
+<img width="600" alt="signed in homepage" src="https://github.com/user-attachments/assets/9f05fc97-04b7-4b05-ad5d-5b79036b994a" />
+<img width="600" alt="portfolio page" src="https://github.com/user-attachments/assets/7e7301ec-4d01-4302-bcc3-ed72c5f8f6f4" />
+<img width="600" alt="browse market page" src="https://github.com/user-attachments/assets/b3a9fe6e-40e5-4479-8866-4700b54591ea" />
+<img width="600" alt="stock page" src="https://github.com/user-attachments/assets/1051175d-9000-4514-a9ec-3225dad78ad6" />
+
 
 ### Timeframe 
 Solo contribution with a duration of 1 week for completion for MVP.
