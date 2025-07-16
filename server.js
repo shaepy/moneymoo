@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const cron = require("node-cron");
 const path = require("path");
 
-// * Routes
+// * Routes and Controllers
 const portfolioRoutes = require("./routes/portfolio.js");
 const watchlistRoutes = require("./routes/watchlist.js");
 const searchRoutes = require("./routes/search.js");
@@ -16,10 +16,11 @@ const browseRoutes = require("./routes/browse.js");
 const stockRoutes = require("./routes/stock.js");
 const authController = require("./controllers/auth.js");
 
-// * Middleware
+// * Middleware + Utils
 const api = require("./utils/apiUtils.js");
-const queries = require("./controllers/queries/queries.js");
+const queries = require("./queries/queries.js");
 const userToView = require("./middleware/user-to-view.js");
+const isSignedIn = require("./middleware/is-signed-in.js");
 
 // * App
 const app = express();
@@ -29,11 +30,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 /* --------- MONGODB CONNECTION --------- */
 
 mongoose.connect(process.env.MONGODB_URI);
-
 try {
   mongoose.connection.on("connected", () => {
     console.log(
@@ -48,16 +55,7 @@ try {
 
 /* --------- ROUTES --------- */
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
 app.use(userToView);
-
 app.use('/auth', authController);
 
 app.get('/', async (req, res) => {
@@ -78,11 +76,12 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.use('/portfolio', portfolioRoutes);
-app.use('/watchlist', watchlistRoutes);
 app.use('/search', searchRoutes);
 app.use('/browse', browseRoutes);
 app.use('/stock', stockRoutes);
+app.use(isSignedIn);
+app.use('/portfolio', portfolioRoutes);
+app.use('/watchlist', watchlistRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
@@ -90,8 +89,8 @@ app.listen(process.env.PORT, () => {
 
 /* --------- CRON JOB / STOCK PRICES --------- */
 
-cron.schedule("*/55 * * * *", async () => {
-  console.log("CRON RUNNING TO UPDATE STOCK PRICES. SET TO EVERY 55 MIN");
+cron.schedule("*/15 * * * *", async () => {
+  console.log("CRON UPDATING STOCK PRICES. SET TO EVERY 15 MIN");
   const stocks = await queries.getDatabaseStocks();
   const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
   const data = await api.fetchPrices(stockSymbols);

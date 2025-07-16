@@ -1,10 +1,10 @@
-const Portfolio = require("../../models/portfolio.js");
-const Watchlist = require("../../models/watchlist.js");
-const User = require("../../models/user.js");
-const Trade = require("../../models/trade.js");
-const Stock = require("../../models/stock.js");
-const api = require("../../utils/apiUtils.js");
-const utils = require("../../utils/serverUtils.js");
+const Portfolio = require("../models/portfolio.js");
+const Watchlist = require("../models/watchlist.js");
+const User = require("../models/user.js");
+const Trade = require("../models/trade.js");
+const Stock = require("../models/stock.js");
+const api = require("../utils/apiUtils.js");
+const utils = require("../utils/serverUtils.js");
 
 const getUserPortfolios = async (userId) => {
     const userPortfolios = await Portfolio.find({ userId: userId }).populate("userStocks.stock");
@@ -135,7 +135,7 @@ const getWatchlistById = async (watchlistId) => {
   return watchlist;
 };
 
-const deleteFromPortfolio = async (portfolioId, tradeId) => {
+const deleteTradeFromPortfolio = async (portfolioId, tradeId) => {
   const trade = await getTradeById(tradeId);
   const tradeTotalCost = trade.price * trade.quantity;
   const portfolio = await getPortfolioById(portfolioId);
@@ -225,7 +225,7 @@ const getTradeById = async (tradeId) => {
     return trade;
 };
 
-const deleteTradesByPortfolio = async (stockId, portfolioId) => {
+const deleteStockFromPortfolio = async (stockId, portfolioId) => {
   const portfolio = await getPortfolioById(portfolioId);
   const userStock = portfolio.userStocks.id(stockId);
   const trades = await getTradesByPortfolioStock(userStock.stock._id, portfolio._id);
@@ -262,29 +262,32 @@ const getPortfolioAndTrades = async (portfolioId) => {
 };
 
 module.exports = {
+  // getters
     getTradeById,
     getStockById,
-    findOrCreateStock,
-    getDatabaseStocks,
-    updateStockPrices,
-    createPortfolio,
-    createTrade,
-    createWatchlist,
-    addToWatchlist,
-    updatePortfolio,
-    updatePortfolioTotalValue,
-    updateTrade,
-    updateWatchlist,
-    removeFromWatchlist,
-    getTradesByPortfolioStock,
-    deleteTradesByPortfolio,
     getUserPortfolios,
     getUserWatchlists,
     getPortfolioById,
     getWatchlistById,
     getUserById,
     getPortfolioAndTrades,
+    getDatabaseStocks,
+    findOrCreateStock,
+  // setters
+    createPortfolio,
+    createTrade,
+    createWatchlist,
+  // updates
+    addToWatchlist,
+    updateStockPrices,
+    updatePortfolio,
+    updatePortfolioTotalValue,
+    updateTrade,
+    updateWatchlist,
+  // deletes
+    removeFromWatchlist,
+    deleteStockFromPortfolio,
+    deleteTradeFromPortfolio,
     deletePortfolio,
-    deleteFromPortfolio,
     deleteWatchlist,
 };

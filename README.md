@@ -54,8 +54,7 @@ As a user,
 - I want to view my stocks in my portfolio.
     - When viewing my portfolio, it should include details such as my average cost basis and unrealized gains/losses.
     - I  want to remove a stock from my portfolio and it should remove all transactions with it.
-        - Note: A stock will automatically be removed when quantity of shares reaches 0 (this method of removal will not remove past trades).
-- I want to search for a stock by “symbol” or by “company name”.
+- I want to search for a stock by “symbol”.
 - I want to view each stock profile so I may browse the company details and any financial data.
 - I want to add stocks to a watchlist so I may monitor their performance and quickly access their profiles.
 

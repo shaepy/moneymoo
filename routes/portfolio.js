@@ -1,12 +1,11 @@
 const express = require("express");
-const isSignedIn = require("../middleware/is-signed-in.js");
 const router = express.Router();
 const utils = require("../utils/serverUtils.js");
-const queries = require("../controllers/queries/queries.js");
+const queries = require("../queries/queries.js");
 
 /* ------------------------- GET ROUTES ------------------------- */
 
-router.get("/", isSignedIn, async (req, res) => {
+router.get("/", async (req, res) => {
   const portfolioId = req.query.id;
   const portfolios = await queries.getUserPortfolios(req.session.user._id);
 
@@ -52,11 +51,11 @@ router.get("/", isSignedIn, async (req, res) => {
   });
 });
 
-router.get("/new", isSignedIn, (req, res) => {
+router.get("/new", (req, res) => {
   res.render("portfolio/new");
 });
 
-router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
+router.get("/:portfolioId/remove", async (req, res) => {
   const stockId = req.query.id;
   const portfolio = await queries.getPortfolioById(req.params.portfolioId);
   if (stockId) {
@@ -75,7 +74,7 @@ router.get("/:portfolioId/remove", isSignedIn, async (req, res) => {
   }
 });
 
-router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
+router.get("/:portfolioId/trades", async (req, res) => {
   const portfolio = await queries.getPortfolioAndTrades(req.params.portfolioId);
   const tradeAction = req.query.edit ? 'edit' : req.query.delete ? 'delete' : null;
   if (tradeAction) {
@@ -87,7 +86,7 @@ router.get("/:portfolioId/trades", isSignedIn, async (req, res) => {
   res.render('portfolio/trades/archive', { portfolio, trades: portfolio.trades });
 });
 
-router.get("/:portfolioId/trades/new", isSignedIn, async (req, res) => {
+router.get("/:portfolioId/trades/new", async (req, res) => {
   const portfolio = await queries.getPortfolioById(req.params.portfolioId);
   res.render("portfolio/trades/new", { portfolio });
 });
@@ -130,15 +129,14 @@ router.delete("/:portfolioId", async (req, res) => {
   res.redirect('/portfolio');
 });
 
-// Delete a trade
 router.delete("/:portfolioId/trades/:tradeId", async (req, res) => {
-  await queries.deleteFromPortfolio(req.params.portfolioId, req.params.tradeId);
+  await queries.deleteTradeFromPortfolio(req.params.portfolioId, req.params.tradeId);
   res.redirect(`/portfolio/${req.params.portfolioId}/trades`);
 });
 
 router.delete("/:portfolioId/stocks/:stockId", async (req, res) => {
   const portfolioId = req.params.portfolioId;
-  await queries.deleteTradesByPortfolio(req.params.stockId, portfolioId);
+  await queries.deleteStockFromPortfolio(req.params.stockId, portfolioId);
   await queries.updatePortfolioTotalValue(portfolioId);
   res.redirect(`/portfolio?id=${portfolioId}`);
 });

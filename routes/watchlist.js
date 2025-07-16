@@ -1,11 +1,10 @@
 const express = require("express");
-const isSignedIn = require("../middleware/is-signed-in.js");
-const queries = require("../controllers/queries/queries.js");
+const queries = require("../queries/queries.js");
 const router = express.Router();
 
 /* ------------------------- GET ROUTES ------------------------- */
 
-router.get('/', isSignedIn, async (req, res) => {
+router.get('/', async (req, res) => {
   const watchlistId = req.query.id;
   const watchlists = await queries.getUserWatchlists(req.session.user._id);
   if (watchlistId) {
@@ -41,11 +40,11 @@ router.get('/', isSignedIn, async (req, res) => {
   });
 });
 
-router.get('/new', isSignedIn, (req, res) => {
+router.get('/new', (req, res) => {
   res.render('watchlist/new');
 });
 
-router.get('/add', isSignedIn, async (req, res) => {
+router.get('/add', async (req, res) => {
   const { symbol } = req.query;
   const stock = await queries.findOrCreateStock(symbol);
   const watchlists = await queries.getUserWatchlists(req.session.user._id);
@@ -56,7 +55,7 @@ router.get('/add', isSignedIn, async (req, res) => {
   });
 });
 
-router.get("/:watchlistId/remove", isSignedIn, async (req, res) => {
+router.get("/:watchlistId/remove", async (req, res) => {
   const watchlist = await queries.getWatchlistById(req.params.watchlistId);
   res.render("watchlist/remove", { watchlist });
 });
