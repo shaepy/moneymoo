@@ -91,13 +91,16 @@
                     <input type="text" name="name" value="<%= activePortfolio.name %>" class="input is-normal" />
                     <button type="submit" class="button is-link mt-3">update</button>
                 </form>
+                <div class="ml-6 mr-5 mb-4">
+                    <a href="/portfolio?id=<%= activePortfolio._id %>">back to view</a>
+                </div>
             <% } else { %>
                 <h1 class="is-size-3 mb-1 ml-6 mr-5"><%= activePortfolio.name %></h1>
+                <div class="ml-6 mr-5 mb-4">
+                    <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a> |
+                    <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
+                </div>
             <% } %>
-            <div class="ml-6 mr-5 mb-4">
-                <a href="/portfolio?id=<%= activePortfolio._id %>&edit=true">edit</a> |
-                <a href="/portfolio/<%= activePortfolio._id %>/remove">remove</a>
-            </div>
             <% if (summary) { %>
             <div class="mt-2 ml-6 mr-5">
                 <p class="is-size-7"><strong>Gain/Loss $</strong> <%= summary.unrealizedPL %></p>
