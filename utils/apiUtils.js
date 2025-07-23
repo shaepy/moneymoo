@@ -12,82 +12,72 @@ const options = {
 async function fetchActiveStocksByVolume(num) {
   try {
     const response = await fetch(
-      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=${num}`, 
+      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=${num}`,
       options
     );
     const results = await response.json();
     const validResults = results["most_actives"].filter((result) => {
-      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+      return !result.symbol.includes(".") && !result.symbol.includes("^");
     });
-  return validResults;
+    return validResults;
   } catch (err) {
     console.error("Failed to fetch active stocks by volume", err);
   }
-};
+}
 
 async function fetchActiveStocksByTrades(num) {
   try {
     const response = await fetch(
-      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=trades&top=${num}`, 
+      `https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=trades&top=${num}`,
       options
     );
     const results = await response.json();
     const validResults = results["most_actives"].filter((result) => {
-      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+      return !result.symbol.includes(".") && !result.symbol.includes("^");
     });
-  return validResults;
+    return validResults;
   } catch (err) {
     console.error("Failed to fetch active stocks by trades", err);
   }
-};
+}
 
 async function fetchTopMarketMovers(num) {
   try {
-    const response = await fetch(
-      `https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=${num}`, 
-      options
-    );
+    const response = await fetch(`https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=${num}`, options);
     const results = await response.json();
     const validResults = results.gainers.filter((result) => {
-      return (!result.symbol.includes(".") && !result.symbol.includes("^"));
+      return !result.symbol.includes(".") && !result.symbol.includes("^");
     });
-  return validResults;
+    return validResults;
   } catch (err) {
     console.error("Failed to fetch top market movers", err);
   }
-};
+}
 
 async function fetchSearchResults(symbol) {
-  try { 
+  try {
     const response = await fetch(
       `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${process.env.FMP_APIKEY}`
     );
-    console.log('API RESPONSE BEFORE JSON:', response);
+    console.log("API RESPONSE BEFORE JSON:", response);
     const results = await response.json();
     const validResults = results.filter((result) => {
-      return (
-        result.exchange !== "OTC" &&
-        result.exchange !== "CRYPTO" &&
-        !result.symbol.includes(".")
-      );
+      return result.exchange !== "OTC" && result.exchange !== "CRYPTO" && !result.symbol.includes(".");
     });
-  return validResults;
+    return validResults;
   } catch (err) {
     console.error("Failed to fetch search results", err);
   }
-};
+}
 
 async function fetchPrices(symbols) {
   try {
-    const response = await fetch(
-      `https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbols}`, 
-      options
-    );
+    const response = await fetch(`https://data.alpaca.markets/v2/stocks/bars/latest?symbols=${symbols}`, options);
     return await response.json();
   } catch (err) {
     console.error("Error with fetching stock prices:", err);
   }
-};
+}
 
 const fetchFinancials = async (symbol) => {
   try {

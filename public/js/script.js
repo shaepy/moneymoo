@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-document.querySelectorAll(".unrealized-pl-data").forEach(data => {
-  const number = parseFloat(data.textContent.replace(/,/g, ''));
+document.querySelectorAll(".unrealized-pl-data").forEach((data) => {
+  const number = parseFloat(data.textContent.replace(/,/g, ""));
   if (number > 0) {
     data.classList.add("unrealized-pl-profit-color");
   } else if (number < 0) {

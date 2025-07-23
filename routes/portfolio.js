@@ -28,8 +28,8 @@ router.get("/", async (req, res) => {
 
   // * if no stocks or no portfolios are found, it will return here
   if (stockLists.length < 1 || portfolios.length < 1) {
-    console.log('NO STOCKS FOUND OR NO PORTFOLIOS FOUND');
-    return res.render('portfolio/index', {
+    console.log("NO STOCKS FOUND OR NO PORTFOLIOS FOUND");
+    return res.render("portfolio/index", {
       portfolios: portfolios,
       activePortfolio: null,
       userStocks: null,
@@ -76,14 +76,17 @@ router.get("/:portfolioId/remove", async (req, res) => {
 
 router.get("/:portfolioId/trades", async (req, res) => {
   const portfolio = await queries.getPortfolioAndTrades(req.params.portfolioId);
-  const tradeAction = req.query.edit ? 'edit' : req.query.delete ? 'delete' : null;
+  const tradeAction = req.query.edit ? "edit" : req.query.delete ? "delete" : null;
   if (tradeAction) {
     const trade = portfolio.trades.find((trade) => {
       return trade._id.toString() === req.query[tradeAction];
     });
     trade[tradeAction] = true;
   }
-  res.render('portfolio/trades/archive', { portfolio, trades: portfolio.trades });
+  res.render("portfolio/trades/archive", {
+    portfolio,
+    trades: portfolio.trades,
+  });
 });
 
 router.get("/:portfolioId/trades/new", async (req, res) => {
@@ -99,7 +102,7 @@ router.post("/", async (req, res) => {
 });
 
 // TODO-ST: HANDLE COMMAS from the price or quantity (no 1,535 passed)
-// TODO-ST: quantity <= 0 should remove userStock from portfolio ? think *
+// TODO-ST: quantity <= 0 should remove userStock from portfolio ? *
 // TODO-ST: handle user facing message for invalid trades of SELL & no existing stock
 
 // create a new trade
@@ -126,7 +129,7 @@ router.put("/:portfolioId/trades/:tradeId", async (req, res) => {
 
 router.delete("/:portfolioId", async (req, res) => {
   await queries.deletePortfolio(req.params.portfolioId);
-  res.redirect('/portfolio');
+  res.redirect("/portfolio");
 });
 
 router.delete("/:portfolioId/trades/:tradeId", async (req, res) => {

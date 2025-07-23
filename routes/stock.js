@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const api = require("../utils/apiUtils.js");
 
-/* ------------------------- GET ROUTES -------------------------- */
-
 router.get("/", (req, res) => {
   res.redirect("/search");
 });
@@ -16,8 +14,7 @@ router.get("/:stockSymbol", async (req, res) => {
   profile.volume = profile.volume.toLocaleString();
   profile.averageVolume = profile.averageVolume.toLocaleString();
 
-  if (!metrics)
-    return res.render(`stock/show`, { stock: profile, financials: null });
+  if (!metrics) return res.render(`stock/show`, { stock: profile, financials: null });
   const financials = {
     "52WeekHigh": metrics.metric["52WeekHigh"] || null,
     "52WeekHighDate": metrics.metric["52WeekHighDate"] || null,

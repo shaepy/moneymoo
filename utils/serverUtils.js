@@ -13,15 +13,11 @@ const calculateNewTotals = (currentTotalCost, currentTotalNumOfShares, trade) =>
 
 const calculateMktValueAndPL = async (userStocksArray) => {
   userStocksArray.forEach((userStock) => {
-    userStock.marketValue = (
-      userStock.stock.price * userStock.quantity
-    ).toFixed(2);
-    userStock.unrealizedPL = (
-      userStock.stock.price * userStock.quantity -
-      userStock.totalCost
-    ).toFixed(2);
+    userStock.marketValue = (userStock.stock.price * userStock.quantity).toFixed(2);
+    userStock.unrealizedPL = (userStock.stock.price * userStock.quantity - userStock.totalCost).toFixed(2);
     userStock.unrealizedPLPercent = (
-      ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) * 100
+      ((userStock.stock.price * userStock.quantity - userStock.totalCost) / userStock.totalCost) *
+      100
     ).toFixed(2);
   });
 };
@@ -40,10 +36,12 @@ const handleTradeType = async (portfolio, trades, trade, stock) => {
   });
   if (trade.type.toLowerCase() === "buy") {
     console.log("--------- THIS IS A BUY TRADE ---------");
-    const { currentTotalCost, currentTotalNumOfShares } =
-      getCurrentTotals(trades);
-    const { newAvgCostBasis, newTotalQuantity, newTotalCost } =
-      calculateNewTotals(currentTotalCost, currentTotalNumOfShares, trade);
+    const { currentTotalCost, currentTotalNumOfShares } = getCurrentTotals(trades);
+    const { newAvgCostBasis, newTotalQuantity, newTotalCost } = calculateNewTotals(
+      currentTotalCost,
+      currentTotalNumOfShares,
+      trade
+    );
     userStock.set({
       costBasis: newAvgCostBasis,
       quantity: newTotalQuantity,
@@ -66,13 +64,6 @@ const calcPortfoliosSummary = async (userStocksArray) => {
   const costBasisSum = userStocksArray.reduce((total, userStock) => total + userStock.totalCost, 0);
   const unrealizedPL = mktValueSum - costBasisSum;
   const unrealizedPLPercent = ((mktValueSum - costBasisSum) / costBasisSum) * 100;
-  console.log(
-    "qtSum:", qtSum,
-    "mktValueSum:", mktValueSum,
-    "costBasisSum:", costBasisSum,
-    "unrealizedPL:", unrealizedPL,
-    "unrealizedPLPercent:", unrealizedPLPercent
-  );
   return {
     qtSum: qtSum,
     mktValueSum: Number(mktValueSum.toFixed(2)).toLocaleString(),

@@ -42,7 +42,7 @@ router.post("/sign-up", async (req, res) => {
     }
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     const newUser = await User.create(req.body);
-    console.log('new user created:', newUser);
+    console.log("new user created:", newUser);
 
     req.session.user = {
       username: newUser.username,
@@ -64,10 +64,7 @@ router.post("/sign-in", async (req, res) => {
       $or: [{ username: req.body.username }, { email: req.body.email }],
     });
     if (!validUser) return res.render("auth/sign-in", { loginError: true });
-    const validPassword = bcrypt.compareSync(
-      req.body.password,
-      validUser.password
-    );
+    const validPassword = bcrypt.compareSync(req.body.password, validUser.password);
     if (!validPassword) return res.render("auth/sign-in", { loginError: true });
 
     req.session.user = {
