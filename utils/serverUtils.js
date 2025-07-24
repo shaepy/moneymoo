@@ -1,3 +1,5 @@
+const stock = require("../models/stock");
+
 const getCurrentTotals = (trades) => {
   const currentTotalCost = trades.reduce((total, trade) => total + trade.quantity * trade.price, 0);
   const currentTotalNumOfShares = trades.reduce((total, trade) => total + trade.quantity, 0);
@@ -75,7 +77,24 @@ const calcPortfoliosSummary = async (userStocksArray) => {
   };
 };
 
+const consolidateUserStocks = async (userStocks) => {
+  let userStockList = [];
+  userStocks.forEach((userStock) => {
+    const stockExists = userStockList.some((s) => s.stock.symbol === userStock.stock.symbol);
+    if (stockExists) {
+      const stock = userStockList.find((s) => s.stock.symbol === userStock.stock.symbol);
+      stock.totalCost += userStock.totalCost;
+      stock.quantity += userStock.quantity;
+      stock.costBasis = stock.totalCost / stock.quantity;
+    } else {
+      userStockList.push(userStock);
+    }
+  });
+  return userStockList;
+};
+
 module.exports = {
+  consolidateUserStocks,
   getCurrentTotals,
   calculateNewTotals,
   handleTradeType,

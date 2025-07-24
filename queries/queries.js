@@ -14,6 +14,46 @@ const getUserById = async (userId) => {
   }
 };
 
+const getPortfolioById = async (portfolioId) => {
+  try {
+    return await Portfolio.findById(portfolioId).populate("userStocks.stock");
+  } catch (e) {
+    console.log("Error getting Portfolio by ID:", e);
+  }
+};
+
+const getTradeById = async (tradeId) => {
+  try {
+    return await Trade.findById(tradeId).populate("stock");
+  } catch (e) {
+    console.log("Error with getting Trade by ID:", e);
+  }
+};
+
+const getWatchlistById = async (watchlistId) => {
+  try {
+    return await Watchlist.findById(watchlistId).populate("stocks");
+  } catch (e) {
+    console.log("Error with getting Watchlist by ID:", e);
+  }
+};
+
+const getUserWatchlists = async (userId) => {
+  try {
+    return await Watchlist.find({ userId: userId }).populate("stocks");
+  } catch (e) {
+    console.log("Error with getting Watchlists by userId:", e);
+  }
+};
+
+const getUserPortfolios = async (userId) => {
+  try {
+    return await Portfolio.find({ userId: userId }).populate("userStocks.stock");
+  } catch (e) {
+    console.log("Error getting Portfolios by userId:", e);
+  }
+};
+
 const getDatabasePortfolios = async () => {
   try {
     return await Portfolio.find({}).populate("userStocks.stock");
@@ -30,37 +70,54 @@ const getDatabaseStocks = async () => {
   }
 };
 
-const updateAllPortfolioValues = async (bulkEdit) => {
+const getTradesByPortfolioStock = async (stockId, portfolioId) => {
   try {
-    const result = await Portfolio.bulkWrite(bulkEdit);
-    console.log(`${result.modifiedCount} portfolio totalValues were updated.`);
-  } catch (error) {
-    console.error("Error updating database portfolios total values:", error);
-  }
-};
-
-const updateStockPrices = async (bulkEdit) => {
-  try {
-    const result = await Stock.bulkWrite(bulkEdit);
-    console.log(`${result.modifiedCount} stocks were updated.`);
-  } catch (error) {
-    console.error("Error updating database stock prices:", error);
-  }
-};
-
-const getUserPortfolios = async (userId) => {
-  try {
-    return await Portfolio.find({ userId: userId }).populate("userStocks.stock");
+    const trades = await Trade.find({
+      $and: [{ stock: stockId }, { portfolioId: portfolioId }],
+    });
+    console.log("TRADES FOUND?:", trades);
+    return trades;
   } catch (e) {
-    console.log("Error getting Portfolios by userId:", e);
+    console.log("Error with getting trades by Portfolio & Stock:", e);
   }
 };
 
-const getPortfolioById = async (portfolioId) => {
+const getPortfolioAndTrades = async (portfolioId) => {
   try {
-    return await Portfolio.findById(portfolioId).populate("userStocks.stock");
+    const portfolio = await Portfolio.findById(portfolioId).populate({
+      path: "trades",
+      populate: { path: "stock", model: "Stock" },
+    });
+    portfolio.trades.forEach((trade) => {
+      trade.dateStr = trade.date.toLocaleDateString("en-us", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    });
+    portfolio.trades.sort((a, b) => b.date - a.date);
+    return portfolio;
   } catch (e) {
-    console.log("Error getting Portfolio by ID:", e);
+    console.log("Error with getting Portfolio and Trades:", e);
+  }
+};
+
+const getStockById = async (stockId) => {
+  try {
+    return await Stock.findById(stockId);
+  } catch (e) {
+    console.log("Error with getting Stock by ID:", e);
+  }
+};
+
+const findOrCreateStock = async (symbol) => {
+  try {
+    let stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
+    console.log("DID WE FIND A STOCK?:", stock);
+    if (!stock) stock = await api.fetchAndCreateStock(symbol);
+    return stock;
+  } catch (e) {
+    console.log("Error with trying to find a stock or creating one from the API:", e);
   }
 };
 
@@ -153,25 +210,21 @@ const createWatchlist = async (userId, name) => {
   }
 };
 
-const addToWatchlist = async (formData, stockId, userId) => {
+const updateAllPortfolioValues = async (bulkEdit) => {
   try {
-    Object.keys(formData).forEach((wl) => {
-      if (formData[wl] === "on") formData[wl] = true;
-    });
-    const stock = await getStockById(stockId);
-    const watchlists = await getUserWatchlists(userId);
-    watchlists.forEach((watchlist) => {
-      Object.keys(formData).forEach(async (key) => {
-        if (key === watchlist.name && key) {
-          const foundList = await Watchlist.findOne({ name: watchlist.name });
-          console.log("FOUND A LIST AND PUSHING STOCK:", foundList);
-          foundList.stocks.push(stock);
-          await foundList.save();
-        }
-      });
-    });
-  } catch (e) {
-    console.log("Error trying to add to Watchlist:", e);
+    const result = await Portfolio.bulkWrite(bulkEdit);
+    console.log(`${result.modifiedCount} portfolio totalValues were updated.`);
+  } catch (error) {
+    console.error("Error updating database portfolios total values:", error);
+  }
+};
+
+const updateStockPrices = async (bulkEdit) => {
+  try {
+    const result = await Stock.bulkWrite(bulkEdit);
+    console.log(`${result.modifiedCount} stocks were updated.`);
+  } catch (error) {
+    console.error("Error updating database stock prices:", error);
   }
 };
 
@@ -216,6 +269,28 @@ const updateTrade = async (tradeId, date, notes) => {
   }
 };
 
+const addToWatchlist = async (formData, stockId, userId) => {
+  try {
+    Object.keys(formData).forEach((wl) => {
+      if (formData[wl] === "on") formData[wl] = true;
+    });
+    const stock = await getStockById(stockId);
+    const watchlists = await getUserWatchlists(userId);
+    watchlists.forEach((watchlist) => {
+      Object.keys(formData).forEach(async (key) => {
+        if (key === watchlist.name && key) {
+          const foundList = await Watchlist.findOne({ name: watchlist.name });
+          console.log("FOUND A LIST AND PUSHING STOCK:", foundList);
+          foundList.stocks.push(stock);
+          await foundList.save();
+        }
+      });
+    });
+  } catch (e) {
+    console.log("Error trying to add to Watchlist:", e);
+  }
+};
+
 const removeFromWatchlist = async (watchlistId, stockId) => {
   try {
     const watchlist = await getWatchlistById(watchlistId);
@@ -223,22 +298,6 @@ const removeFromWatchlist = async (watchlistId, stockId) => {
     await watchlist.save();
   } catch (e) {
     console.log("Error with trying to remove stock from Watchlist:", e);
-  }
-};
-
-const getUserWatchlists = async (userId) => {
-  try {
-    return await Watchlist.find({ userId: userId }).populate("stocks");
-  } catch (e) {
-    console.log("Error with getting Watchlists by userId:", e);
-  }
-};
-
-const getWatchlistById = async (watchlistId) => {
-  try {
-    return await Watchlist.findById(watchlistId).populate("stocks");
-  } catch (e) {
-    console.log("Error with getting Watchlist by ID:", e);
   }
 };
 
@@ -307,45 +366,6 @@ const deleteWatchlist = async (watchlistId) => {
   }
 };
 
-const getTradesByPortfolioStock = async (stockId, portfolioId) => {
-  try {
-    const trades = await Trade.find({
-      $and: [{ stock: stockId }, { portfolioId: portfolioId }],
-    });
-    console.log("TRADES FOUND?:", trades);
-    return trades;
-  } catch (e) {
-    console.log("Error with getting trades by Portfolio & Stock:", e);
-  }
-};
-
-const findOrCreateStock = async (symbol) => {
-  try {
-    let stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
-    console.log("DID WE FIND A STOCK?:", stock);
-    if (!stock) stock = await api.fetchAndCreateStock(symbol);
-    return stock;
-  } catch (e) {
-    console.log("Error with trying to find a stock or create one from the API:", e);
-  }
-};
-
-const getStockById = async (stockId) => {
-  try {
-    return await Stock.findById(stockId);
-  } catch (e) {
-    console.log("Error with getting Stock by ID:", e);
-  }
-};
-
-const getTradeById = async (tradeId) => {
-  try {
-    return await Trade.findById(tradeId).populate("stock");
-  } catch (e) {
-    console.log("Error with getting Trade by ID:", e);
-  }
-};
-
 const deleteStockFromPortfolio = async (userStockId, portfolioId) => {
   try {
     const portfolio = await getPortfolioById(portfolioId);
@@ -365,26 +385,6 @@ const deleteStockFromPortfolio = async (userStockId, portfolioId) => {
     });
   } catch (e) {
     console.log("Error with deleting userStock from Portfolio:", e);
-  }
-};
-
-const getPortfolioAndTrades = async (portfolioId) => {
-  try {
-    const portfolio = await Portfolio.findById(portfolioId).populate({
-      path: "trades",
-      populate: { path: "stock", model: "Stock" },
-    });
-    portfolio.trades.forEach((trade) => {
-      trade.dateStr = trade.date.toLocaleDateString("en-us", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    });
-    portfolio.trades.sort((a, b) => b.date - a.date);
-    return portfolio;
-  } catch (e) {
-    console.log("Error with getting Portfolio and Trades:", e);
   }
 };
 

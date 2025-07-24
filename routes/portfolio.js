@@ -41,12 +41,13 @@ router.get("/", async (req, res) => {
   await utils.calculateMktValueAndPL(userStocks);
   const portfoliosSummary = await utils.calcPortfoliosSummary(userStocks);
   const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
+  const consolidatedList = await utils.consolidateUserStocks(userStocks);
 
   res.render("portfolio/index", {
     portfolios: portfolios,
     activePortfolio: null,
     portfoliosSumValue,
-    userStocks: userStocks,
+    userStocks: consolidatedList,
     summary: portfoliosSummary,
   });
 });
