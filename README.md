@@ -91,15 +91,11 @@ A favorite key learning was writing a cron job using node-cron. I gained an unde
 Another key learning was considering unit testing during development. Although I didn’t use official tools like Mocha or Jest, I employed a simple method of writing `console.logs` as I developed each section of code to check the data being returned. By logging both the expected response and the variable that should store the fetched data, I could easily compare the two and ensure they matched. This approach helped streamline my development process, allowing me to keep things modular and tackle potential issues quickly without needing to debug large blocks of code.
 
 ## Bugs
-There are known bugs and edge cases that need to be considered and implemented post-MVP.
+There are known bugs that need to be fixed and implemented post-MVP.
 
-#### Bugs 
+#### Known Issues 
 - After adding a stock to a watchlist, `/watchlist` does not show the stock until manual refresh
-- Handle prevention of user input of commas in "quantity" for Trade forms
 - Day change and change percentage are not being updated/recalculated after adding to Stock model
-
-#### Edge Cases
-- (Not really edge) Handle case of reaching 0 quantity from selling all stock (need to consider whether we remove the userStock, or keep with 0 quantity. What if user needs to add it again?)
 
 ## Future Improvements 
 - Consolidate stocks in `/portfolio` index when viewing all stocks from all portfolios
@@ -111,7 +107,7 @@ There are known bugs and edge cases that need to be considered and implemented p
 
 ### Stretch Goals
 These were stretch goals set during the MVP phase. As a user,
-- I want to browse popular stocks so I may view their profiles or add them to my watchlist.
+- I want to browse popular stocks so I may view their profiles or add them to my watchlist. (Added)
 - I want to see my realized profit/loss history based on my trades, for each stock I own(ed).
 - I want to see daily chart history for portfolio account values so I may know how my portfolios are performing.
 - I want to see an allocation visual for stocks in my portfolio(s), divided by their industries or sectors.

@@ -49,6 +49,8 @@ const handleTradeType = async (portfolio, trades, trade, stock) => {
     });
   } else {
     console.log("--------- THIS IS A SELL TRADE ---------");
+    if (userStock.quantity === trade.quantity) return "removeStock";
+    else if (userStock.quantity < trade.quantity) return "invalidTrade";
     userStock.set({
       quantity: userStock.quantity - trade.quantity,
       totalCost: userStock.totalCost - userStock.costBasis * trade.quantity,

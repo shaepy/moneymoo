@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
 const morgan = require("morgan");
-const session = require('express-session');
+const session = require("express-session");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
@@ -43,30 +43,24 @@ app.use(
 mongoose.connect(process.env.MONGODB_URI);
 try {
   mongoose.connection.on("connected", () => {
-    console.log(
-      `Connected to MongoDB collection: ${mongoose.connection.name}.`
-    );
+    console.log(`Connected to MongoDB collection: ${mongoose.connection.name}.`);
   });
 } catch (error) {
-  console.log(
-    `Failed to connect to MongoDB collection: ${mongoose.connection.name}`
-  );
+  console.log(`Failed to connect to MongoDB collection: ${mongoose.connection.name}`);
 }
 
 /* --------- ROUTES --------- */
 
 app.use(userToView);
-app.use('/auth', authController);
+app.use("/auth", authController);
 
-app.get('/', async (req, res) => {
+app.get("/", async (req, res) => {
   if (req.session.user) {
     const portfolios = await queries.getUserPortfolios(req.session.user._id);
     const watchlists = await queries.getUserWatchlists(req.session.user._id);
-    // const portfoliosSumValue = await utils.getPortfoliosSumValue(portfolios);
     res.render("index", {
       portfolios: portfolios,
       watchlists: watchlists,
-      // portfoliosSumValue,
     });
   } else {
     res.render("index", {
@@ -76,23 +70,23 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.use('/search', searchRoutes);
-app.use('/browse', browseRoutes);
-app.use('/stock', stockRoutes);
+app.use("/search", searchRoutes);
+app.use("/browse", browseRoutes);
+app.use("/stock", stockRoutes);
 app.use(isSignedIn);
-app.use('/portfolio', portfolioRoutes);
-app.use('/watchlist', watchlistRoutes);
+app.use("/portfolio", portfolioRoutes);
+app.use("/watchlist", watchlistRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`App is listening on port ${process.env.PORT}`);
 });
 
-/* --------- CRON JOB / STOCK PRICES --------- */
+/* --------- CRON JOBS --------- */
 
 cron.schedule("*/15 * * * *", async () => {
   console.log("CRON UPDATING STOCK PRICES. SET TO EVERY 15 MIN");
   const stocks = await queries.getDatabaseStocks();
-  const stockSymbols = stocks.map(stock => stock.symbol).join("%2C");
+  const stockSymbols = stocks.map((stock) => stock.symbol).join("%2C");
   const data = await api.fetchPrices(stockSymbols);
   const newPrices = [];
   Object.keys(data.bars).forEach((key) => {
@@ -108,6 +102,27 @@ cron.schedule("*/15 * * * *", async () => {
       },
     };
   });
-  console.log("BULK EDIT:", bulkEdit);
   await queries.updateStockPrices(bulkEdit);
+});
+
+cron.schedule("* 6 * * *", async () => {
+  console.log("CRON UPDATING PORTFOLIO TOTAL VALUES. SET TO EVERY 6 HRS");
+  const portfoliosInDatabase = await queries.getDatabasePortfolios();
+  portfoliosInDatabase.forEach((portfolio) => {
+    const mktValue = portfolio.userStocks.reduce((total, userStock) => {
+      return total + userStock.quantity * userStock.stock.price;
+    }, 0);
+    portfolio.mktValue = mktValue;
+    console.log("portfolio.mktValue:", portfolio.mktValue);
+  });
+  const bulkEdit = portfoliosInDatabase.map((portfolio) => {
+    return {
+      updateOne: {
+        filter: { _id: portfolio._id },
+        update: { $set: { totalValue: portfolio.mktValue } },
+      },
+    };
+  });
+  console.log("BULK EDIT:", JSON.stringify(bulkEdit, null, 2));
+  await queries.updateAllPortfolioValues(bulkEdit);
 });

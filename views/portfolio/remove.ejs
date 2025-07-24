@@ -22,6 +22,7 @@
         <h1 class="is-size-3">Remove Stock</h1>
         <p>Are you sure you want to remove <strong><%= userStock.stock.symbol %> (<%= userStock.stock.companyName %>)</strong> from your portfolio?</p>
         <p>This will permanently remove the stock from <strong><%= portfolio.name %></strong> and delete all past trades.</p>
+        <p>Once deleted, this action cannot be undone.</p>
         <form action="/portfolio/<%= portfolio._id %>/stocks/<%= userStock._id %>?_method=DELETE" method="POST" class="mt-4">
             <button type="submit" class="button is-light is-danger mt-3">Delete <%= userStock.stock.symbol %></button>
         </form>
