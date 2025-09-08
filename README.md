@@ -1,5 +1,6 @@
 # moneymoo
-<img width="600" alt="anon homepage" src="https://github.com/user-attachments/assets/5cbfa280-cf8f-430f-ba78-ad25922d68ca" />
+<img width="600" alt="Screenshot 2025-07-15 at 8 11 03 PM" src="https://github.com/user-attachments/assets/30f7f404-07e5-4949-9ad3-5c5bd78ffea7" />
+
 
 #### Deployment Link Here
 
@@ -11,7 +12,7 @@ Moneymoo is a full-stack web application designed to help investors and traders:
 - Search real-time stock prices and company financial data
 - Add stocks to a personalized watchlist for quick access
   
-Built with the MEN stack (MongoDB, Express, Node.js) and integrated with stock market APIs for real-time market data, **moneymoo** delivers accurate, up-to-date financial insights in an intuitive interface.
+Built with the MEN stack (MongoDB, Express, Node.js) and integrated with stock market APIs for real-time market data, **moneymoo** delivers accurate, up-to-date financial insights in an intuitive interface with session-based authentication.
 
 <img width="600" alt="signed in homepage" src="https://github.com/user-attachments/assets/9f05fc97-04b7-4b05-ad5d-5b79036b994a" />
 <img width="600" alt="portfolio page" src="https://github.com/user-attachments/assets/7e7301ec-4d01-4302-bcc3-ed72c5f8f6f4" />
@@ -50,7 +51,7 @@ My project management was done through Notion, utilizing a Kanban board for deve
 
 ---
 
-### Entity Relationship Diagram - ERD
+### Entity Relationship Diagram (ERD)
 After writing my MVP user stories, I focused on the data structure and determining the database relationships for my app. We were instructed to incorporate both reference and embedded subdocument relationships, which influenced how I structured the models. The User model includes arrays for portfolios and watchlists, holding references to portfolioIds and watchlistIds. 
 
 I chose to create separate models for Stock and Trade: Stock is referenced in multiple places (like portfolios and watchlists), ensuring a single source of truth. Whereas Trade is a model to handle the large volume of trades each user may have, referencing both portfolioId and userId for easy querying. Portfolios and watchlists are also models, as a user can have many of each, with portfolios containing trade references and embedded userStocks, which reference individual stocks but also store portfolio-specific data.
