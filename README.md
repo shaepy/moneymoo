@@ -1,7 +1,7 @@
 # moneymoo
 <img width="600" alt="anon homepage" src="https://github.com/user-attachments/assets/5cbfa280-cf8f-430f-ba78-ad25922d68ca" />
 
-### Deployment Link TBD
+#### Deployment Link Here
 
 ## Overview
 Moneymoo is a full-stack web application designed to help investors and traders:
@@ -32,15 +32,21 @@ Built with the MEN stack (MongoDB, Express, Node.js) and integrated with stock m
 
 ---
 
+## Features
+
+- **Portfolio Management** • Add, edit, and remove stock positions to build and manage multiple investment portfolios.
+- **Trade Logging & History** • Record trades with purchase price, quantity, and dates to track unrealized gains/losses over time.
+- **Real-Time Market Data** • Search for tickers and access up-to-date stock prices and key company financials through integrated APIs.
+- **Watchlist** • Create and monitor a personalized watchlist of stocks for quick reference.
+- **Trending Stocks** • Browse a curated list of popular and trending tickers to explore new opportunities.
+- **User-Friendly Insights** • View portfolio performance at a glance, with clear calculations for cost basis and profit/loss.
+
+---
+
 ## Planning Phase
 My project management was done through Notion, utilizing a Kanban board for development. MVP stories were turned into tasks on the board, with any bugs or additional tickets being added to the backlog during the development phase.
 - [Link to Full Project Plan ](https://www.notion.so/Unit-2-moneymoo-CRUD-app-21a7ed1fdd5880278eb5dc9129f1ff62?source=copy_link)
 - [Kanban Board](https://www.notion.so/21b7ed1fdd5880899ec9ec812a6dedce?v=21b7ed1fdd58814f943b000cfff17172&source=copy_link)
-
-### Project Requirements
-- Build a full-stack application by making your own backend and your own front-end
-- Use an Express API to serve your data from a Mongo database
-- Multiple relationships and CRUD functionality for at least a couple of models
 
 ---
 
