@@ -1,5 +1,9 @@
 # moneymoo
 #### Deployment Link: https://moneymoo-dac0bfd4070e.herokuapp.com/
+| Test Credentials |
+|------------------|
+| Username: testuser |
+| Password: password |
 <img width="600" alt="Screenshot 2025-07-15 at 8 11 03 PM" src="https://github.com/user-attachments/assets/30f7f404-07e5-4949-9ad3-5c5bd78ffea7" />
 
 ## Overview
