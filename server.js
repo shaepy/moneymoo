@@ -43,10 +43,14 @@ app.use(
 mongoose.connect(process.env.MONGODB_URI);
 try {
   mongoose.connection.on("connected", () => {
-    console.log(`Connected to MongoDB collection: ${mongoose.connection.name}.`);
+    console.log(
+      `Connected to MongoDB collection: ${mongoose.connection.name}.`
+    );
   });
 } catch (error) {
-  console.log(`Failed to connect to MongoDB collection: ${mongoose.connection.name}`);
+  console.log(
+    `Failed to connect to MongoDB collection: ${mongoose.connection.name}`
+  );
 }
 
 /* --------- ROUTES --------- */
@@ -105,8 +109,8 @@ cron.schedule("*/15 * * * *", async () => {
   await queries.updateStockPrices(bulkEdit);
 });
 
-cron.schedule("* 6 * * *", async () => {
-  console.log("CRON UPDATING PORTFOLIO TOTAL VALUES. SET TO EVERY 6 HRS");
+cron.schedule("10 * * * *", async () => {
+  console.log("CRON UPDATING PORTFOLIO TOTAL VALUES. SET TO EVERY 10 MIN");
   const portfoliosInDatabase = await queries.getDatabasePortfolios();
   portfoliosInDatabase.forEach((portfolio) => {
     const mktValue = portfolio.userStocks.reduce((total, userStock) => {
