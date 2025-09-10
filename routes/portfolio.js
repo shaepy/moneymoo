@@ -26,7 +26,6 @@ router.get("/", async (req, res) => {
     .map((list) => list.userStocks)
     .flat();
 
-  // * if no stocks or no portfolios are found, it will return here
   if (stockLists.length < 1 || portfolios.length < 1) {
     console.log("NO STOCKS FOUND OR NO PORTFOLIOS FOUND");
     return res.render("portfolio/index", {
@@ -102,11 +101,8 @@ router.post("/", async (req, res) => {
   res.redirect("/portfolio");
 });
 
-// TODO-ST: HANDLE COMMAS from the price or quantity (no 1,535 passed)
-// TODO-ST: quantity <= 0 should remove userStock from portfolio ? *
-// TODO-ST: handle user facing message for invalid trades of SELL & no existing stock
 
-// create a new trade
+// ! TODO-ST: need user facing msgs for invalid trades of SELL. check queries.createTrade 
 router.post("/:portfolioId", async (req, res) => {
   const portfolioId = req.params.portfolioId;
   const { type, symbol, date, quantity, price, notes } = req.body;

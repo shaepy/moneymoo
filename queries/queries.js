@@ -143,10 +143,10 @@ const createTrade = async (type, symbol, date, quantity, price, notes, portfolio
     const trades = await getTradesByPortfolioStock(stock._id, portfolio._id);
     const tradeDate = new Date(date);
 
-    // TODO-ST: Handle user-facing message for not enough shares to sell / shares are 0.
-    // i.e "Stock removed from portfolio since selling"
-    // i.e "Invalid trade, not enough shares in current stock to sell"
-    // "Invalid trade. No existing trades found for this stock"
+    // ! TODO-ST: Handle user-facing messages for invalid trades and quantity at 0.
+    // i.e "Stock removed from portfolio since quantity is now 0"
+    // "Invalid trade, not enough shares in current stock to sell."
+    // "Invalid trade. No existing trades found for this stock."
 
     if (type.toLowerCase() === "sell" && trades.length <= 0) {
       console.log('There are no existing trades found for this sell trade.');

@@ -98,16 +98,16 @@ There are known bugs that need to be fixed and implemented post-MVP.
 - Day change and change percentage are not being updated/recalculated after adding to Stock model
 
 ## Future Improvements 
-- Consolidate stocks in `/portfolio` index when viewing all stocks from all portfolios
+- Consolidate stocks in `/portfolio` index when viewing all stocks from all portfolios (Done)
 - Manual refresh stock prices button
-- Implement Browse Stocks / Stock screener page
+- Implement Browse Stocks (Done)
 - Add charts to stock pages and portfolios
 - Show profit/loss history for trades and stocks
 - Search for a stock by company name
 
 ### Stretch Goals
 These were stretch goals set during the MVP phase. As a user,
-- I want to browse popular stocks so I may view their profiles or add them to my watchlist. (Added)
+- I want to browse popular stocks so I may view their profiles or add them to my watchlist. (Done)
 - I want to see my realized profit/loss history based on my trades, for each stock I own(ed).
 - I want to see daily chart history for portfolio account values so I may know how my portfolios are performing.
 - I want to see an allocation visual for stocks in my portfolio(s), divided by their industries or sectors.
