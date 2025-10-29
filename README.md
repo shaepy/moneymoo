@@ -16,10 +16,10 @@ Moneymoo is a full-stack web application designed to help investors and traders:
   
 Built with the MEN stack (MongoDB, Express, Node.js) and integrated with stock market APIs for real-time market data, **moneymoo** delivers accurate, up-to-date financial insights in an intuitive interface with session-based authentication.
 
-<img width="600" alt="signed in homepage" src="https://github.com/user-attachments/assets/9f05fc97-04b7-4b05-ad5d-5b79036b994a" />
-<img width="600" alt="portfolio page" src="https://github.com/user-attachments/assets/7e7301ec-4d01-4302-bcc3-ed72c5f8f6f4" />
-<img width="600" alt="browse market page" src="https://github.com/user-attachments/assets/b3a9fe6e-40e5-4479-8866-4700b54591ea" />
-<img width="600" alt="stock page" src="https://github.com/user-attachments/assets/1051175d-9000-4514-a9ec-3225dad78ad6" />
+<img width="550" alt="signed in homepage" src="https://github.com/user-attachments/assets/9f05fc97-04b7-4b05-ad5d-5b79036b994a" />
+<img width="550" alt="portfolio page" src="https://github.com/user-attachments/assets/7e7301ec-4d01-4302-bcc3-ed72c5f8f6f4" />
+<img width="550" alt="browse market page" src="https://github.com/user-attachments/assets/b3a9fe6e-40e5-4479-8866-4700b54591ea" />
+<img width="550" alt="stock page" src="https://github.com/user-attachments/assets/1051175d-9000-4514-a9ec-3225dad78ad6" />
 
 ---
 
@@ -51,6 +51,11 @@ My project management was done through Notion, utilizing a Kanban board for deve
 - [Link to Full Project Plan ](https://www.notion.so/Unit-2-moneymoo-CRUD-app-21a7ed1fdd5880278eb5dc9129f1ff62?source=copy_link)
 - [Kanban Board](https://www.notion.so/21b7ed1fdd5880899ec9ec812a6dedce?v=21b7ed1fdd58814f943b000cfff17172&source=copy_link)
 
+### Wireframes
+<img width="400" alt="portfolio-trade-mock" src="https://github.com/user-attachments/assets/49d23d07-3004-4fcb-813f-0c7548a731da" />
+<img width="400" alt="watchlist-1-mock" src="https://github.com/user-attachments/assets/0a6a28b0-1c2a-4d43-8026-b71dfee29a15" />
+<img width="400" alt="dashboard-mock" src="https://github.com/user-attachments/assets/2f3f17dd-90ce-4db5-b4ad-e8b8ab530ed5" />
+
 ---
 
 ### Entity Relationship Diagram (ERD)
@@ -71,19 +76,71 @@ Utilizing Postman, I tested responses from the APIs to view the JSON data. This 
 1. One of the main challenges I faced was managing the dependencies of multiple models with references to each other. For example, since the Portfolio model is tied to Trades, UserStocks, and Users, deleting a portfolio required ensuring that corresponding trades were also deleted and that the portfolio reference was removed from the user's portfolio list. This complexity extended to watchlists as well, requiring careful consideration of all database areas that needed to be updated or deleted, making CRUD operations more intricate and time-consuming. Each update or delete operation involved thinking through how different models were linked and ensuring consistency across the database.
 2. Another challenge was time. A week was enough to complete an MVP and get things working, but it didn't leave much room for covering all the edge cases I encountered as I went along. This also meant that achieving my stretch goals would require significantly more time. In the previous unit, I worked on a front-end only browser game, which I was able to complete much quicker. Being new to backend development, this project highlighted the amount of time required for both front-end and back-end work, with a much larger portion dedicated to the backend and server setup.
 
-## Wins
-1. Having a well-structured data diagram and clear MVP requirements allowed me to move through tasks efficiently, with a solid sense of direction. I always knew how to proceed and never felt stuck during the project.
-2. Another win was getting familiar with the MVC architecture and learning how to modularize dependencies. I became very comfortable with the backend components and truly enjoyed working on that part of the project, which fortunately made up a bulk of the work.
+## Wins & Key Learnings
 
-## Key Learnings
-### Cron Job
-A favorite key learning was writing a cron job using node-cron. I gained an understanding of what a cron job is and how it can be utilized to automate tasks at specific intervals. Specifically, I used a cron job to fetch stock prices periodically and update the stock prices in my database’s stock model, ensuring the data stayed up-to-date without manual intervention. This helped streamline the process of keeping stock information current in the app.
+### API Integrations
+
+A major win was successfully integrating three different APIs to deliver real-time stock and company data, each serving a distinct purpose within the app. During the planning phase, I evaluated several external APIs by comparing pricing, rate limits, and data coverage. While I prioritized free services, I also subscribed to Financial Modeling Prep for one month to access higher API limits during development. This integration strengthened the app’s reliability and provided a richer, more dynamic experience for users tracking market performance.
+
+The app uses:
+1. **Alpaca Markets** for real-time stock prices and bar charts
+2. **Finnhub** for financial metrics like P/E ratios and earnings per share
+3. **Financial Modeling Prep** for detailed company profiles and fundamental data. 
+
+### Cron Jobs
+A favorite key learning was writing a cron job using `node-cron`. I gained an understanding of what a cron job is and how it can be utilized to automate tasks at specific intervals. Specifically, I used a cron job to fetch stock prices periodically and update the stock prices in my database’s stock model, ensuring the data stayed up-to-date without manual intervention. This helped streamline the process of keeping stock information current in the app.
+
+```
+cron.schedule("*/15 * * * *", async () => {
+  console.log("CRON UPDATING STOCK PRICES. SET TO EVERY 15 MIN");
+  const stocks = await queries.getDatabaseStocks();
+  const stockSymbols = stocks.map((stock) => stock.symbol).join("%2C");
+  const data = await api.fetchPrices(stockSymbols);
+  const newPrices = [];
+  Object.keys(data.bars).forEach((key) => {
+    const newObj = { symbol: key, price: data.bars[key].c };
+    newPrices.push(newObj);
+  });
+  const bulkEdit = newPrices.map((stock) => {
+    return {
+      updateOne: {
+        filter: { symbol: stock.symbol },
+        update: { $set: { price: stock.price } },
+      },
+    };
+  });
+  await queries.updateStockPrices(bulkEdit);
+});
+
+cron.schedule("10 * * * *", async () => {
+  console.log("CRON UPDATING PORTFOLIO TOTAL VALUES. SET TO EVERY 10 MIN");
+  const portfoliosInDatabase = await queries.getDatabasePortfolios();
+  portfoliosInDatabase.forEach((portfolio) => {
+    const mktValue = portfolio.userStocks.reduce((total, userStock) => {
+      return total + userStock.quantity * userStock.stock.price;
+    }, 0);
+    portfolio.mktValue = mktValue;
+  });
+  const bulkEdit = portfoliosInDatabase.map((portfolio) => {
+    return {
+      updateOne: {
+        filter: { _id: portfolio._id },
+        update: { $set: { totalValue: portfolio.mktValue } },
+      },
+    };
+  });
+  await queries.updateAllPortfolioValues(bulkEdit);
+});
+```
 
 ### Unit Testing
 Another key learning was considering unit testing during development. Although I didn’t use official tools like Mocha or Jest, I employed a simple method of writing `console.logs` as I developed each section of code to check the data being returned. By logging both the expected response and the variable that should store the fetched data, I could easily compare the two and ensure they matched. This approach helped streamline my development process, allowing me to keep things modular and tackle potential issues quickly without needing to debug large blocks of code.
 
+### Other Wins
+1. Having a well-structured data diagram and clear MVP requirements allowed me to move through tasks efficiently, with a solid sense of direction. I always knew how to proceed and never felt stuck during the project.
+2. Another win was getting familiar with the MVC architecture and learning how to modularize dependencies. I became very comfortable with the backend components and truly enjoyed working on that part of the project, which fortunately made up a bulk of the work.
+
 ## Bugs
-There are known bugs that need to be fixed and implemented.
 
 #### Known Issues 
 - After adding a stock to a watchlist, `/watchlist` does not show the stock until manual refresh
